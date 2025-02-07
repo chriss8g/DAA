@@ -1,0 +1,60 @@
+# Ignorar archivos auxiliares generados por LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+
+# Ignorar archivos de salida (PDF, DVI, etc.)
+*.pdf
+*.dvi
+*.ps
+
+# Ignorar archivos de respaldo de editores de texto
+*~
+*.backup
+*.swp
+*.swo
+
+# Ignorar archivos generados por LaTeXmk
+*.latexmk
+
+# Ignorar archivos generados por BibTeX
+*.bbl
+*.blg
+
+# Ignorar archivos generados por glossaries
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+
+# Ignorar archivos generados por minted (si usas resaltado de sintaxis)
+*.pyg
+*.pygstyle
+
+# Ignorar archivos generados por listings
+*.lol
+
+# Ignorar archivos generados por beamer (presentaciones)
+*.vrb
+*.nav
+*.snm
+
+# Ignorar archivos de configuración local (si los hay)
+/.vscode/
+/.idea/

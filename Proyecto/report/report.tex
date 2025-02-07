@@ -1,0 +1,155 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{algorithm, algorithmic}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{algorithm}      % Para el entorno algorithm
+\usepackage{algpseudocode} % Para el entorno algorithmic
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Teorema} % Define el entorno "theorem"
+
+\title{Diseño y Análisis de Algortimos para el problema Gestión Agrícola}
+\author{Amanda Cordero Lezcano\\Christopher Guerra Herrero}
+\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section*{Problema de Balanceo de Carga}{Extraído de página 600 de Algorithm Design\\\\}
+	
+	
+	Formulamos el \textbf{Problema de Balanceo de Carga} de la siguiente manera. Se nos da un conjunto de \( m \) máquinas \( M_1, \dots, M_m \) y un conjunto de \( n \) trabajos; cada trabajo \( j \) tiene un tiempo de procesamiento \( t_j \). Buscamos asignar cada trabajo a una de las máquinas de manera que las cargas colocadas en todas las máquinas estén lo más \textit{balanceadas} posible.
+	
+	Más concretamente, en cualquier asignación de trabajos a máquinas, podemos denotar por \( A(i) \) el conjunto de trabajos asignados a la máquina \( M_i \). Bajo esta asignación, la máquina \( M_i \) necesita trabajar un tiempo total de
+	\[
+	T_i = \sum_{j \in A(i)} t_j,
+	\]
+	y declaramos que esta es la carga en la máquina \( M_i \). Buscamos minimizar una cantidad conocida como el \textit{makespan}, que es simplemente la carga máxima en cualquier máquina:
+	\[
+	T = \max_i T_i.
+	\]
+	
+	\colorbox{yellow}{
+		\parbox{\linewidth}{
+	Aunque no lo demostraremos, el problema de planificación de encontrar una asignación con el mínimo makespan es \textbf{NP-hard}.
+		}
+	}
+	
+	\subsection*{Diseño del Algoritmo}
+	
+	Primero consideramos un algoritmo greedy muy simple para el problema. El algoritmo hace un recorrido por los trabajos en cualquier orden; cuando llega al trabajo \( j \), lo asigna a la máquina cuya carga sea la más pequeña hasta ese momento.
+	
+
+\begin{algorithm}
+	\caption{Greedy-Balance}
+	\label{alg:greedy-balance}
+		\State Empezar sin trabajos asignados
+		\For{cada máquina \( M_i \)}
+		\State \( T_i \gets 0 \) \Comment{Inicializar la carga de la máquina}
+		\State \( A(i) \gets \emptyset \) \Comment{Inicializar el conjunto de trabajos asignados a \( M_i \)}
+		\EndFor
+		
+		\For{cada trabajo \( j = 1, \dots, n \)}
+		\State Sea \( M_i \) la máquina con la menor carga
+		\State Asignar el trabajo \( j \) a la máquina \( M_i \)
+		\State \( A(i) \gets A(i) \cup \{j\} \)
+		\State \( T_i \gets T_i + t_j \)
+		\EndFor
+\end{algorithm}
+
+	
+	\subsection*{Análisis del Algoritmo}
+	
+	Sea \( T \) el makespan de la asignación resultante; queremos mostrar que \( T \) no es mucho mayor que el makespan mínimo posible \( T^* \). Por supuesto, al intentar hacer esto, nos encontramos inmediatamente con el problema básico mencionado anteriormente: necesitamos comparar nuestra solución con el valor óptimo \( T^* \), aunque no sabemos cuál es este valor y no tenemos forma de calcularlo. Para el análisis, por lo tanto, necesitaremos una cota inferior para el óptimo, una cantidad con la garantía de que, no importa cuán bueno sea el óptimo, no puede ser menor que esta cota.
+	
+	Hay muchas posibles cotas inferiores para el óptimo. Una idea para una cota inferior se basa en considerar el tiempo total de procesamiento \( \sum_j t_j \). Una de las \( m \) máquinas debe hacer al menos una fracción \( 1/m \) del trabajo total, y por lo tanto tenemos lo siguiente:
+	
+	\begin{equation} \label{eq:lower-bound-1}
+		T^* \geq \frac{1}{m} \sum_j t_j.
+	\end{equation}
+	
+	Hay un tipo particular de caso en el que esta cota inferior es demasiado débil para ser útil. Supongamos que tenemos un trabajo que es extremadamente largo en relación con la suma de todos los tiempos de procesamiento. En una versión suficientemente extrema de esto, la solución óptima colocará este trabajo en una máquina por sí solo, y será el último en terminar. En tal caso, nuestro algoritmo greedy en realidad produciría la solución óptima, pero la cota inferior en (\ref{eq:lower-bound-1}) no es lo suficientemente fuerte para establecer esto.
+	
+	Esto sugiere la siguiente cota inferior adicional para \( T^* \):
+	
+	\begin{equation} \label{eq:lower-bound-2}
+		T^* \geq \max_j t_j.
+	\end{equation}
+	
+	Ahora estamos listos para evaluar la asignación obtenida por nuestro algoritmo greedy.
+	
+	\begin{theorem}
+		El algoritmo \textbf{Greedy-Balance} produce una asignación de trabajos a máquinas con un makespan \( T \leq 2T^* \).
+	\end{theorem}
+	
+	\begin{proof}
+		Aquí está el plan general para la demostración. Al analizar un algoritmo de aproximación, se compara la solución obtenida con lo que se sabe sobre el óptimo; en este caso, nuestras cotas inferiores (\ref{eq:lower-bound-1}) y (\ref{eq:lower-bound-2}). Consideramos una máquina \( M_i \) que alcanza la carga máxima \( T \) en nuestra asignación, y nos preguntamos: ¿Cuál fue el último trabajo \( j \) asignado a \( M_i \)? Si \( t_j \) no es demasiado grande en relación con la mayoría de los otros trabajos, entonces no estamos muy por encima de la cota inferior (\ref{eq:lower-bound-1}). Y, si \( t_j \) es un trabajo muy grande, entonces podemos usar (\ref{eq:lower-bound-2}).
+		
+		Cuando asignamos el trabajo \( j \) a \( M_i \), la máquina \( M_i \) tenía la carga más pequeña de cualquier máquina; esta es la propiedad clave de nuestro algoritmo greedy. Su carga justo antes de esta asignación era \( T_i - t_j \), y como esta era la carga más pequeña en ese momento, se sigue que todas las máquinas tenían una carga de al menos \( T_i - t_j \). Así, sumando las cargas de todas las máquinas, tenemos:
+		\[
+		\sum_k T_k \geq m(T_i - t_j),
+		\]
+		o equivalentemente,
+		\[
+		T_i - t_j \leq \frac{1}{m} \sum_k T_k.
+		\]
+		Pero el valor \( \sum_k T_k \) es simplemente la carga total de todos los trabajos \( \sum_j t_j \) (ya que cada trabajo se asigna exactamente a una máquina), y por lo tanto la cantidad en el lado derecho de esta desigualdad es exactamente nuestra cota inferior en el valor óptimo, de (\ref{eq:lower-bound-1}). Así,
+		\[
+		T_i - t_j \leq T^*.
+		\]
+		Ahora consideramos la parte restante de la carga en \( M_i \), que es solo el trabajo final \( j \). Aquí simplemente usamos la otra cota inferior que tenemos, (\ref{eq:lower-bound-2}), que dice que \( t_j \leq T^* \). Sumando estas dos desigualdades, vemos que:
+		\[
+		T_i = (T_i - t_j) + t_j \leq 2T^*.
+		\]
+		Como nuestro makespan \( T \) es igual a \( T_i \), este es el resultado que queremos.
+	\end{proof}
+	
+	\subsection*{Un Algoritmo de Aproximación Mejorado}
+	
+	Ahora pensemos en cómo podríamos desarrollar un algoritmo de aproximación mejor, es decir, uno para el cual siempre estemos garantizados de estar dentro de un factor estrictamente menor que 2 del óptimo. Para hacer esto, es útil pensar en los peores casos para nuestro algoritmo de aproximación actual.
+	
+	Un ejemplo malo para nuestro algortimo greedy pudiera tener la siguiente característica: distribuimos todo de manera muy uniforme entre las máquinas, y luego llega un último trabajo gigante. Intuitivamente, parece que ayudaría organizar primero los trabajos más grandes de manera adecuada, con la idea de que, más tarde, los trabajos pequeños solo pueden causar un daño limitado. Y, de hecho, esta idea conduce a una mejora cuantificable.
+	
+	Así, ahora analizamos la variante del algoritmo greedy que primero ordena los trabajos en orden decreciente de tiempo de procesamiento y luego procede como antes. Demostraremos que la asignación resultante tiene un makespan que es, como máximo, 1.5 veces el óptimo.
+	
+	\begin{algorithm}
+		\caption{Sorted-Balance}
+			\State Iniciar sin trabajos asignados.
+			\State Asignar \( T_i = 0 \) y \( A(i) = \emptyset \) para todas las máquinas \( M_i \).
+			\State Ordenar los trabajos en orden decreciente de tiempos de procesamiento \( t_j \).
+			\State Suponer que \( t_1 \geq t_2 \geq \dots \geq t_n \).
+			\For{cada trabajo \( j = 1, \dots, n \)}
+			\State Sea \( M_i \) la máquina que alcanza el mínimo \( \min_k T_k \).
+			\State Asignar el trabajo \( j \) a la máquina \( M_i \).
+			\State Actualizar \( A(i) \leftarrow A(i) \cup \{j\} \).
+			\State Actualizar \( T_i \leftarrow T_i + t_j \).
+			\EndFor
+	\end{algorithm}
+	
+	La mejora proviene de la siguiente observación. Si tenemos menos de \( m \) trabajos, entonces la solución greedy claramente será óptima, ya que coloca cada trabajo en su propia máquina. Y si tenemos más de \( m \) trabajos, entonces podemos usar la siguiente cota inferior adicional para el óptimo.
+	
+	\begin{equation} \label{lem:lower-bound}
+	 \( T^* \geq 2t_{m+1} \).
+	\end{equation}
+	
+	\begin{proof}
+		Considera solo los primeros \( m + 1 \) trabajos en el orden clasificado. Cada uno de ellos toma al menos un tiempo \( t_{m+1} \). Hay \( m + 1 \) trabajos y solo \( m \) máquinas, por lo que debe haber una máquina a la que se le asignen dos de estos trabajos. Esta máquina tendrá un tiempo de procesamiento de al menos \( 2t_{m+1} \).
+	\end{proof}
+	
+	\begin{theorem} \label{thm:sorted-balance}
+		El algoritmo \textbf{Sorted-Balance} produce una asignación de trabajos a máquinas con un makespan \( T \leq \frac{3}{2} T^* \).
+	\end{theorem}
+	
+	\begin{proof}
+		La demostración será muy similar al análisis del algoritmo anterior. Como antes, consideraremos una máquina \( M_i \) que tiene la carga máxima. Si \( M_i \) solo contiene un trabajo, entonces el programa es óptimo.
+		
+		Supongamos que la máquina \( M_i \) tiene al menos dos trabajos, y sea \( t_j \) el último trabajo asignado a la máquina. Nótese que \( j \geq m + 1 \), ya que el algoritmo asignará los primeros \( m \) trabajos a \( m \) máquinas distintas. Por lo tanto, \( t_j \leq t_{m+1} \leq \frac{1}{2} T^* \), donde la segunda desigualdad es (\ref{lem:lower-bound}).
+		
+		Ahora procedemos como en la demostración de (\ref{thm:sorted-balance}), con el siguiente cambio. Al final de esa demostración, teníamos las desigualdades \( T_i - t_j \leq T^* \) y \( t_j \leq T^* \), y las sumamos para obtener el factor de 2. Pero en nuestro caso aquí, la segunda de estas desigualdades es, de hecho, \( t_j \leq \frac{1}{2} T^* \); por lo tanto, sumar las dos desigualdades nos da la cota:
+		\[
+		T_i \leq \frac{3}{2} T^*.
+		\]
+	\end{proof}
+\end{document}
