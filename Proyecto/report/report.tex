@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{report}
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{algorithm, algorithmic}
 \usepackage{graphicx}
@@ -16,10 +16,10 @@
 \begin{document}
 	
 	\maketitle
+	\tableofcontents
 	
-	\section*{Problema de Balanceo de Carga}{Extraído de página 600 de Algorithm Design\\\\}
-	
-	
+	\chapter{Problema de Balanceo de Carga}
+	{Con información de \cite{Kleinberg2005} y \cite{Garey1979}\\\\}
 	Formulamos el \textbf{Problema de Balanceo de Carga} de la siguiente manera. Se nos da un conjunto de \( m \) máquinas \( M_1, \dots, M_m \) y un conjunto de \( n \) trabajos; cada trabajo \( j \) tiene un tiempo de procesamiento \( t_j \). Buscamos asignar cada trabajo a una de las máquinas de manera que las cargas colocadas en todas las máquinas estén lo más \textit{balanceadas} posible.
 	
 	Más concretamente, en cualquier asignación de trabajos a máquinas, podemos denotar por \( A(i) \) el conjunto de trabajos asignados a la máquina \( M_i \). Bajo esta asignación, la máquina \( M_i \) necesita trabajar un tiempo total de
@@ -31,13 +31,82 @@
 	T = \max_i T_i.
 	\]
 	
-	\colorbox{yellow}{
-		\parbox{\linewidth}{
-	Aunque no lo demostraremos, el problema de planificación de encontrar una asignación con el mínimo makespan es \textbf{NP-hard}.
-		}
-	}
+
+
+	Nuestro problema de optimización tiene una versión de decisión: Dado un valor $ M $, ¿existe una asignación de tareas tal que el makespan sea $ \leq M $?
+	A continuación nos apoyaremos del problema de desición y del conocido problema Partition para demostrar que la versión de optimización de Load Balancing es NP duro.
 	
-	\subsection*{Diseño del Algoritmo}
+	\section{Un problema NP duro}
+	
+	\begin{theorem}
+		El problema de optimización de Load Balancing es NP duro
+	\end{theorem}
+	
+	\begin{proof}
+		
+	\subsection{Reducción desde Partition al problema de decisión}
+	Para demostrar que el problema de decisión es NP-completo, realizamos una reducción desde el problema \textbf{Partition}, que es conocido como NP-completo.
+	
+	\subsection*{Problema Partition}
+	Dado un conjunto de números $ \{p_1, p_2, \dots, p_n\} $, ¿es posible dividirlo en dos subconjuntos disjuntos $ A $ y $ B $ tales que:
+	\[
+	\sum_{p_i \in A} p_i = \sum_{p_i \in B} p_i?
+	\]
+	
+	Sea $ P = \sum_{i=1}^n p_i $. El problema puede reformularse como: ¿existe una partición tal que:
+	\[
+	\sum_{p_i \in A} p_i = \frac{P}{2}?
+	\]
+	
+	\subsection*{Reducción}
+	Dada una instancia del problema Load Balancing de decisión, construimos el problema Partition como sigue:
+	\begin{itemize}
+		\item Sea $ m = 2 $ (dos máquinas).
+		\item Asigna los tiempos de procesamiento $ p_1, p_2, \dots, p_n $ a las tareas.
+		\item Define $ T = \frac{P}{2} $.
+	\end{itemize}
+	
+	Ahora preguntamos: ¿Existe una asignación de tareas a las dos máquinas tal que el makespan sea $ \leq T $?
+	
+	\subsubsection*{Equivalencia}
+	Si existe una asignación de tareas entonces habrá una partición. Si no existe, no existirá la partición. Por lo tanto, resolver el problema de decisión de Load Balancing permite resolver el problema Partition.
+	Como el problema Partition es NP-completo y hemos mostrado que cualquier instancia de Partition puede reducirse en tiempo polinomial a una instancia del problema de decisión de Load Balancing, concluimos que el problema de decisión de Load Balancing es NP-completo.
+	
+	\subsection{El problema de optimización NP duro}
+	Finalmente, demostramos que el problema de optimización de Load Balancing es NP-duro. Para ello, notamos que:
+	
+	1. Si podemos resolver el problema de optimización (encontrar el makespan mínimo $ T^* $), entonces podemos resolver el problema de decisión para cualquier valor $ T $ comparando $ T $ con $ T^* $:
+	\[
+	\text{Respuesta al problema de decisión} =
+	\begin{cases}
+		\text{sí}, & \text{si } T \geq T^*, \\
+		\text{no}, & \text{si } T < T^*.
+	\end{cases}
+	\]
+	
+	2. Como el problema de decisión es NP-completo, resolver el problema de optimización implica resolver un problema NP-completo.
+	
+	Por lo tanto, el problema de optimización de Load Balancing es NP-duro.
+		\end{proof}
+	
+	\section{Algoritmos de aproximación}
+
+	Hemos demostrado que el problema de Load Balancing (en su versión de optimización) es NP-duro mediante una reducción desde el problema Partition al problema de decisión, y luego conectando el problema de decisión con el problema de optimización. Ahora vamos a ver algunos algoritmos para aproximar la solución del mismo.
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+	
+	\subsection{Greedy-Balance}
 	
 	Primero consideramos un algoritmo greedy muy simple para el problema. El algoritmo hace un recorrido por los trabajos en cualquier orden; cuando llega al trabajo \( j \), lo asigna a la máquina cuya carga sea la más pequeña hasta ese momento.
 	
@@ -106,7 +175,7 @@
 		Como nuestro makespan \( T \) es igual a \( T_i \), este es el resultado que queremos.
 	\end{proof}
 	
-	\subsection*{Un Algoritmo de Aproximación Mejorado}
+	\subsection{Sorted-Balance}
 	
 	Ahora pensemos en cómo podríamos desarrollar un algoritmo de aproximación mejor, es decir, uno para el cual siempre estemos garantizados de estar dentro de un factor estrictamente menor que 2 del óptimo. Para hacer esto, es útil pensar en los peores casos para nuestro algoritmo de aproximación actual.
 	
@@ -131,8 +200,8 @@
 	La mejora proviene de la siguiente observación. Si tenemos menos de \( m \) trabajos, entonces la solución greedy claramente será óptima, ya que coloca cada trabajo en su propia máquina. Y si tenemos más de \( m \) trabajos, entonces podemos usar la siguiente cota inferior adicional para el óptimo.
 	
 	\begin{equation} \label{lem:lower-bound}
-	 \( T^* \geq 2t_{m+1} \).
-	\end{equation}
+	  T^* \geq 2t_{m+1} .
+	  	\end{equation}
 	
 	\begin{proof}
 		Considera solo los primeros \( m + 1 \) trabajos en el orden clasificado. Cada uno de ellos toma al menos un tiempo \( t_{m+1} \). Hay \( m + 1 \) trabajos y solo \( m \) máquinas, por lo que debe haber una máquina a la que se le asignen dos de estos trabajos. Esta máquina tendrá un tiempo de procesamiento de al menos \( 2t_{m+1} \).
@@ -152,4 +221,19 @@
 		T_i \leq \frac{3}{2} T^*.
 		\]
 	\end{proof}
+	
+	
+	
+	
+	\begin{thebibliography}{9}
+		\bibitem{Kleinberg2005}
+		Jon Kleinberg and Éva Tardos.
+		\textit{Algorithm Design}.
+		1st ed. Pearson, 2005. Extraído de página 600.
+
+		\bibitem{Garey1979}
+		Michael R. Garey and David S. Johnson.
+		\textit{Computers and Intractability: A Guide to the Theory of NP-Completeness}.
+		1st ed. W. H. Freeman and Company, 1979.Extraído de página 238.
+	\end{thebibliography}
 \end{document}
