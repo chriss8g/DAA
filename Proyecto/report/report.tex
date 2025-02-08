@@ -45,7 +45,7 @@
 	\begin{proof}
 		
 	\subsection{Reducción desde Partition al problema de decisión}
-	Para demostrar que el problema de decisión es NP-completo, realizamos una reducción desde el problema \textbf{Partition}, que es conocido como NP-completo.
+	Para demostrar que el problema de decisión es NP-completo, realizamos una reducción desde el problema \textbf{Partition}, primero demostremos que este es NP-completo a su vez reduciéndolo a Subset-Sum.
 	
 	\subsection*{Problema Partition}
 	Dado un conjunto de números $ \{p_1, p_2, \dots, p_n\} $, ¿es posible dividirlo en dos subconjuntos disjuntos $ A $ y $ B $ tales que:
@@ -58,7 +58,63 @@
 	\sum_{p_i \in A} p_i = \frac{P}{2}?
 	\]
 	
-	\subsection*{Reducción}
+	\subsection*{Demostración de que Partition es NP-completo}
+	
+	Para demostrar que \textbf{Partition} es NP-completo, seguimos los siguientes pasos:
+	
+	\subsubsection*{Paso 1: Partition está en NP}
+	
+	Un problema está en NP si, dada una solución candidata, podemos verificar su validez en tiempo polinomial.
+	
+	Una solución candidata para \textbf{Partition} consiste en un subconjunto $ A \subseteq S $. Para verificar si $ A $ es una solución válida:\\
+	- Calculamos $ \text{suma}(A) = \sum_{x \in A} x $.\\
+	- Verificamos si $ \text{suma}(A) = \frac{\sum_{i=1}^n a_i}{2} $.\\
+	- Esto se puede hacer en tiempo polinomial con respecto al tamaño de $ S $.
+	
+	Por lo tanto, \textbf{Partition} está en NP.
+	
+	\subsubsection*{Paso 2: Partition es NP-duro}
+	
+	Para demostrar que \textbf{Partition} es NP-duro, realizamos una reducción polinomial desde el problema \textbf{Subset-Sum}, que es conocido como NP-completo.
+	
+	\subsubsection*{Problema Subset-Sum}
+	
+	El problema \textbf{Subset-Sum} se define como sigue:
+	
+	\textbf{Entrada}: Un conjunto finito $ S = \{a_1, a_2, \dots, a_n\} $ de números enteros positivos y un objetivo $ T $.
+	
+	\textbf{Pregunta}: ¿Existe un subconjunto $ A \subseteq S $ tal que:
+	\[
+	\sum_{x \in A} x = T?
+	\]
+	
+	\subsubsection*{Reducción desde Subset-Sum a Partition}
+	
+	Dada una instancia del problema \textbf{Subset-Sum} con conjunto $ S = \{a_1, a_2, \dots, a_n\} $ y objetivo $ T $, construimos una instancia del problema \textbf{Partition} como sigue:
+	
+	1. Calcula la suma total de los elementos de $ S $:
+	\[
+	P = \sum_{i=1}^n a_i.
+	\]
+	
+	2. Agrega un nuevo número $ b $ al conjunto $ S $, donde:
+	\[
+	b = |P - 2T|.
+	\]
+	
+	3. Define el nuevo conjunto $ S' = S \cup \{b\} $.
+	
+	Ahora preguntamos: ¿Es posible particionar $ S' $ en dos subconjuntos $ A $ y $ B $ tales que:
+	\[
+	\sum_{x \in A} x = \sum_{y \in B} y?
+	\]
+	
+	En tal caso la cardinalidad de los subconjuntos será $$\frac{P + |P - 2T|}{2}$$ Por lo que uno de los dos tendrá $T$ de cardinalidad al excluir a $b$
+	
+	
+	
+	
+	\subsection*{Reducción desde Parition a Load Balancing}
 	Dada una instancia del problema Load Balancing de decisión, construimos el problema Partition como sigue:
 	\begin{itemize}
 		\item Sea $ m = 2 $ (dos máquinas).
@@ -93,15 +149,6 @@
 
 	Hemos demostrado que el problema de Load Balancing (en su versión de optimización) es NP-duro mediante una reducción desde el problema Partition al problema de decisión, y luego conectando el problema de decisión con el problema de optimización. Ahora vamos a ver algunos algoritmos para aproximar la solución del mismo.
 	
-	
-	
-	
-	
-
-
-
-
-
 
 
 
