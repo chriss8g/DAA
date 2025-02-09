@@ -304,7 +304,91 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	Por lo tanto, el problema de optimización de Load Balancing es NP-duro.
 		\end{proof}
 	
-	\subsection{Algoritmos de aproximación}
+		\subsection{Algortimo Exacto}
+		Búsqueda con Backtracking y Poda es una alternativa para resolver el problema de Load Balancing de manera óptima, aunque su escalabilidad está limitada por la complejidad computacional del problema.
+
+		Esta técnica explora sistemáticamente todas las posibles asignaciones de trabajos a máquinas, pero utiliza estrategias de poda para eliminar ramas del árbol de búsqueda que no pueden conducir a una solución mejor que la ya encontrada.
+
+		\subsubsection{Pasos Clave}
+
+		\textbf{1. Ordenar Trabajos}
+		\begin{itemize}
+			\item Ordenar los trabajos en orden descendente de \( t_j \). 
+			\item \textbf{Propósito}: Asignar primero los trabajos más grandes para revelar rápidamente soluciones subóptimas y permitir una poda temprana.
+		\end{itemize}
+
+		\textbf{2. Inicializar Variables}
+		\begin{itemize}
+			\item Mantener dos registros fundamentales:
+			\begin{enumerate}
+				\item \( T_{\text{best}} \): El mejor makespan encontrado hasta el momento (inicializado con una cota superior, como la suma total de \( t_j \)).
+				\item \( \text{cargas} = [c_1, c_2, \dots, c_m] \): Arreglo que almacena la carga parcial de cada máquina \( M_i \) (inicializado en 0).
+			\end{enumerate}
+		\end{itemize}
+
+		\textbf{3. Exploración Recursiva}
+		\begin{itemize}
+			\item Para cada trabajo \( j \) (en orden descendente):
+			\begin{enumerate}
+				\item Asignar \( j \) a cada máquina \( M_i \).
+				\item Actualizar la carga parcial de \( M_i \): \( c_i \leftarrow c_i + t_j \).
+				\item Si en cualquier momento \( c_i \geq T_{\text{best}} \), detener la exploración de esa rama (\textbf{poda por optimalidad}).
+				\item Llamar recursivamente al algoritmo para el siguiente trabajo \( j+1 \).
+				\item Deshacer la asignación (\( c_i \leftarrow c_i - t_j \)) para probar otras máquinas (\textbf{backtracking}).
+			\end{enumerate}
+		\end{itemize}
+
+		\textbf{4. Estrategias de Poda}
+		\begin{itemize}
+			\item \textbf{Poda por Carga Parcial}: Si \( c_i > T_{\text{best}} \), ignorar asignaciones futuras a \( M_i \).
+			\item \textbf{Cota Inferior}: Calcular una cota inferior para el makespan parcial usando:
+			\[
+			T_{\text{min}} = \max\left( \max_{1 \leq i \leq m} c_i,\; \frac{1}{m} \left( \sum_{i=1}^m c_i + \sum_{j=k}^n t_j \right) \right)
+			\]
+			donde \( k \) es el índice del trabajo actual. Si \( T_{\text{min}} \geq T_{\text{best}} \), podar la rama.
+		\end{itemize}
+
+		\subsubsection{Complejidad Temporal}
+		$O(m^n)$ en el peor caso
+
+		\begin{algorithm}
+			\caption{Backtracking con Poda para Load Balancing}
+			\begin{algorithmic}[1]
+			\Require Lista de trabajos $jobs$, número de máquinas $m$
+			\Ensure Makespan mínimo $T_{\text{best}}$
+			
+			\State Ordenar $jobs$ en orden descendente de $t_j$ \Comment{$t_1 \geq t_2 \geq \dots \geq t_n$}
+			\State Inicializar $T_{\text{best}} \leftarrow \sum_{j=1}^n t_j$ \Comment{Cota superior inicial}
+			\State Inicializar cargas $loads \leftarrow [0, 0, \dots, 0]$ \Comment{Vector de tamaño $m$}
+			
+			\Function{Backtrack}{$current\_job$, $loads$, $T_{\text{best}}$}
+				\If{$current\_job = n$}
+					\State \Return $\max(loads)$ \Comment{Base case: todos los trabajos asignados}
+				\EndIf
+				
+				\State $job \leftarrow jobs[current\_job]$
+				\For{$i \leftarrow 1$ \textbf{to} $m$}
+					\If{$loads[i] + job \geq T_{\text{best}}$}
+						\State \Continue \Comment{Poda: rama no prometedora}
+					\EndIf
+					
+					\State $loads[i] \leftarrow loads[i] + job$ \Comment{Asignar trabajo a máquina $i$}
+					\State $new\_T \leftarrow \Call{Backtrack}{current\_job + 1, loads, T_{\text{best}}}$
+					
+					\If{$new\_T < T_{\text{best}}$}
+						\State $T_{\text{best}} \leftarrow new\_T$ \Comment{Actualizar mejor solución}
+					\EndIf
+					
+					\State $loads[i] \leftarrow loads[i] - job$ \Comment{Backtracking: deshacer asignación}
+				\EndFor
+				\State \Return $T_{\text{best}}$
+			\EndFunction
+			
+			\State \Return $\Call{Backtrack}{0, loads, T_{\text{best}}}$ \Comment{Llamada inicial}
+			\end{algorithmic}
+			\end{algorithm}
+	
+		\subsection{Algoritmos de aproximación}
 
 	Hemos demostrado que el problema de Load Balancing (en su versión de optimización) es NP-duro mediante una reducción desde el problema Partition al problema de decisión, y luego conectando el problema de decisión con el problema de optimización. Ahora vamos a ver algunos algoritmos para aproximar la solución del mismo.
 	
