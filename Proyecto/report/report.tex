@@ -17,8 +17,9 @@
 	
 	\maketitle
 	\tableofcontents
+	\chapter{Problema de Scheduling}
 	
-	\chapter{Problema de Balanceo de Carga}
+	\section{Balanceo de Carga}
 	{Con información de \cite{Kleinberg2005} y \cite{Garey1979}\\\\}
 	Formulamos el \textbf{Problema de Balanceo de Carga} de la siguiente manera. Se nos da un conjunto de \( m \) máquinas \( M_1, \dots, M_m \) y un conjunto de \( n \) trabajos; cada trabajo \( j \) tiene un tiempo de procesamiento \( t_j \). Buscamos asignar cada trabajo a una de las máquinas de manera que las cargas colocadas en todas las máquinas estén lo más \textit{balanceadas} posible.
 	
@@ -36,7 +37,7 @@
 	Nuestro problema de optimización tiene una versión de decisión: Dado un valor $ M $, ¿existe una asignación de tareas tal que el makespan sea $ \leq M $?
 	A continuación nos apoyaremos del problema de desición y del conocido problema Partition para demostrar que la versión de optimización de Load Balancing es NP duro.
 	
-	\section{Un problema NP duro}
+	\subsection{Demostración de que Load Balancing es NP duro}
 	
 	\begin{theorem}
 		El problema de optimización de Load Balancing es NP duro
@@ -44,11 +45,11 @@
 	
 	\begin{proof}
 		
-	\subsection{Reducción desde Partition al problema de decisión}
 	Para demostrar que el problema de decisión es NP-completo, realizamos una reducción desde el problema \textbf{Partition}, primero demostremos que este es NP-completo a su vez reduciéndolo a Subset-Sum.
 	
-	\subsection*{Problema Partition}
-	Dado un conjunto de números $ \{p_1, p_2, \dots, p_n\} $, ¿es posible dividirlo en dos subconjuntos disjuntos $ A $ y $ B $ tales que:
+	\subsubsection{Demostración de que Partition es NP completo}
+	
+	Problema Partition:	Dado un conjunto de números $ \{p_1, p_2, \dots, p_n\} $, ¿es posible dividirlo en dos subconjuntos disjuntos $ A $ y $ B $ tales que:
 	\[
 	\sum_{p_i \in A} p_i = \sum_{p_i \in B} p_i?
 	\]
@@ -58,7 +59,6 @@
 	\sum_{p_i \in A} p_i = \frac{P}{2}?
 	\]
 	
-	\subsection*{Demostración de que Partition es NP-completo}
 	
 	Para demostrar que \textbf{Partition} es NP-completo, seguimos los siguientes pasos:
 	
@@ -128,7 +128,7 @@
 	Si existe una asignación de tareas entonces habrá una partición. Si no existe, no existirá la partición. Por lo tanto, resolver el problema de decisión de Load Balancing permite resolver el problema Partition.
 	Como el problema Partition es NP-completo y hemos mostrado que cualquier instancia de Partition puede reducirse en tiempo polinomial a una instancia del problema de decisión de Load Balancing, concluimos que el problema de decisión de Load Balancing es NP-completo.
 	
-	\subsection{El problema de optimización NP duro}
+	
 	Finalmente, demostramos que el problema de optimización de Load Balancing es NP-duro. Para ello, notamos que:
 	
 	1. Si podemos resolver el problema de optimización (encontrar el makespan mínimo $ T^* $), entonces podemos resolver el problema de decisión para cualquier valor $ T $ comparando $ T $ con $ T^* $:
@@ -145,7 +145,7 @@
 	Por lo tanto, el problema de optimización de Load Balancing es NP-duro.
 		\end{proof}
 	
-	\section{Algoritmos de aproximación}
+	\subsection{Algoritmos de aproximación}
 
 	Hemos demostrado que el problema de Load Balancing (en su versión de optimización) es NP-duro mediante una reducción desde el problema Partition al problema de decisión, y luego conectando el problema de decisión con el problema de optimización. Ahora vamos a ver algunos algoritmos para aproximar la solución del mismo.
 	
@@ -153,7 +153,7 @@
 
 
 	
-	\subsection{Greedy-Balance}
+	\subsection*{Greedy-Balance}
 	
 	Primero consideramos un algoritmo greedy muy simple para el problema. El algoritmo hace un recorrido por los trabajos en cualquier orden; cuando llega al trabajo \( j \), lo asigna a la máquina cuya carga sea la más pequeña hasta ese momento.
 	
@@ -222,7 +222,7 @@
 		Como nuestro makespan \( T \) es igual a \( T_i \), este es el resultado que queremos.
 	\end{proof}
 	
-	\subsection{Sorted-Balance}
+	\subsection*{Sorted-Balance}
 	
 	Ahora pensemos en cómo podríamos desarrollar un algoritmo de aproximación mejor, es decir, uno para el cual siempre estemos garantizados de estar dentro de un factor estrictamente menor que 2 del óptimo. Para hacer esto, es útil pensar en los peores casos para nuestro algoritmo de aproximación actual.
 	
@@ -269,6 +269,101 @@
 		\]
 	\end{proof}
 	
+	
+	
+	\section{Problema de Load Balancing con Precedencia}
+	
+	El problema de \textbf{Load Balancing con Precedencia} se define como sigue:
+	
+	\textbf{Entrada}:
+	\begin{itemize}
+		\item Un conjunto de $ n $ tareas $ T = \{t_1, t_2, \dots, t_n\} $.
+		\item Cada tarea $ t_i $ tiene un tiempo de procesamiento $ p_i > 0 $.
+		\item Un grafo dirigido acíclico (DAG) $ G = (T, E) $ que representa las restricciones de precedencia. Una arista $ (t_i, t_j) \in E $ indica que la tarea $ t_i $ debe completarse antes de que $ t_j $ pueda comenzar.
+		\item $ m $ procesadores idénticos disponibles para ejecutar las tareas.
+	\end{itemize}
+	
+	\textbf{Salida}:
+	\begin{itemize}
+		\item Una asignación de tareas a procesadores y un horario que minimice el \textbf{makespan} $ C_{\text{max}} $, definido como el tiempo máximo de finalización de todas las tareas:
+		\[
+		C_{\text{max}} = \max_{j=1, \dots, m} \sum_{t_i \in S_j} p_i,
+		\]
+		donde $ S_j $ es el conjunto de tareas asignadas al procesador $ j $.
+		\item El horario debe respetar las restricciones de precedencia: si $ (t_i, t_j) \in E $, entonces $ t_i $ debe completarse antes de que $ t_j $ comience.
+	\end{itemize}
+	
+	\subsection{Demostración de que Load Balancing con Precedencia es NP-duro}
+	
+	Para demostrar que el problema de \textbf{Load Balancing con Precedencia} es NP-duro, realizamos una reducción desde el problema de \textbf{Load Balancing sin precedencia}.
+	
+	\subsubsection*{Construcción de la Instancia}
+	
+	Dada una instancia del problema de \textbf{Load Balancing sin precedencia}, construimos una instancia del problema de \textbf{Load Balancing con Precedencia} como sigue:
+	\begin{itemize}
+		\item Mantenemos el mismo conjunto de tareas $ T $ y sus tiempos de procesamiento $ p_1, p_2, \dots, p_n $.
+		\item No añadimos ninguna restricción de precedencia, es decir, el grafo $ G = (T, E) $ es vacío ($ E = \emptyset $).
+	\end{itemize}
+	
+	\subsubsection*{Equivalencia}
+	
+	- Si podemos resolver el problema de \textbf{Load Balancing con Precedencia} (con $ E = \emptyset $), entonces también podemos resolver el problema de \textbf{Load Balancing sin precedencia}.\\
+	- Por lo tanto, ambos problemas son equivalentes cuando no hay restricciones de precedencia.
+	
+	\subsubsection*{Complejidad de la Reducción}
+	
+	La construcción de la instancia del problema de \textbf{Load Balancing con Precedencia} a partir del problema de \textbf{Load Balancing sin precedencia} es trivial y se realiza en tiempo polinomial.
+	
+	
+	
+	
+	
+	\section{Problema de Load Balancing con División de Tareas}
+	
+	El problema de \textbf{Load Balancing con División de Tareas} se define como sigue:
+	
+	\textbf{Entrada}:
+	\begin{itemize}
+		\item Un conjunto de $ n $ tareas $ T = \{t_1, t_2, \dots, t_n\} $.
+		\item Cada tarea $ t_i $ tiene un tiempo de procesamiento total $ p_i > 0 $.
+		\item Las tareas pueden dividirse en subtareas más pequeñas, y cada subparte puede asignarse a cualquier procesador. El tiempo de procesamiento de una subparte es proporcional al tamaño de la parte asignada.
+		\item $ m $ procesadores idénticos disponibles para ejecutar las subtareas.
+	\end{itemize}
+	
+	\textbf{Salida}:
+	\begin{itemize}
+		\item Una asignación de las subtareas a los procesadores que minimice el \textbf{makespan} $ C_{\text{max}} $, definido como el tiempo máximo de finalización de todas las subtareas:
+		\[
+		C_{\text{max}} = \max_{j=1, \dots, m} \sum_{k \in S_j} p_k,
+		\]
+		donde $ S_j $ es el conjunto de subtareas asignadas al procesador $ j $.
+	\end{itemize}
+	
+	
+	
+	
+	\section{Problema de Load Balancing con Precedencia y División de Tareas}
+	
+	El problema de \textbf{Load Balancing con Precedencia y División de Tareas} se define como sigue:
+	
+	\textbf{Entrada}:
+	\begin{itemize}
+		\item Un conjunto de $ n $ tareas $ T = \{t_1, t_2, \dots, t_n\} $.
+		\item Cada tarea $ t_i $ tiene un tiempo de procesamiento total $ p_i > 0 $.
+		\item Las tareas pueden dividirse en subtareas más pequeñas, y cada subparte puede asignarse a cualquier procesador. El tiempo de procesamiento de una subparte es proporcional al tamaño de la parte asignada.
+		\item Un grafo dirigido acíclico (DAG) $ G = (T, E) $ que representa las restricciones de precedencia. Una arista $ (t_i, t_j) \in E $ indica que la tarea $ t_i $ debe completarse antes de que $ t_j $ pueda comenzar.
+		\item $ m $ procesadores idénticos disponibles para ejecutar las subtareas.
+	\end{itemize}
+	
+	\textbf{Salida}:
+	\begin{itemize}
+		\item Una asignación de las subtareas a los procesadores que minimice el \textbf{makespan} $ C_{\text{max}} $, definido como el tiempo máximo de finalización de todas las subtareas:
+		\[
+		C_{\text{max}} = \max_{j=1, \dots, m} \sum_{k \in S_j} p_k,
+		\]
+		donde $ S_j $ es el conjunto de subtareas asignadas al procesador $ j $.
+		\item El horario debe respetar las restricciones de precedencia: si $ (t_i, t_j) \in E $, entonces todas las subtareas de $ t_i $ deben completarse antes de que comience cualquier subparte de $ t_j $.
+	\end{itemize}
 	
 	
 	
