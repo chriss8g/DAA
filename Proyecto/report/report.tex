@@ -76,7 +76,7 @@ Para demostrar que la reducción de \textbf{UK} a \textbf{K} es válida, debemos
 \begin{itemize}
 	\item \textbf{No repetición de elementos}: En cada iteración, el algoritmo selecciona un subconjunto de elementos \textbf{sin repeticiones}, es decir, cada elemento se incluye en la mochila a lo sumo una vez. Esto es consistente con la definición de \textbf{K}, donde los elementos no pueden repetirse.
 	
-	\item \textbf{Optimalidad local}: En cada paso, el algoritmo selecciona un subconjunto de elementos que maximiza el valor dentro de la capacidad residual disponible. Si no se eligiera la mejor combinación en una iteración, existiría otra selección con mayor valor que podría reemplazarla, contradiciendo la optimalidad de la solución. Por lo tanto, cada selección es localmente óptima.
+	\item \textcolor{yellow}{\textbf{Optimalidad local}: En cada paso, el algoritmo selecciona un subconjunto de elementos que maximiza el valor dentro de la capacidad residual disponible. Si no se eligiera la mejor combinación en una iteración, existiría otra selección con mayor valor que podría reemplazarla, contradiciendo la optimalidad de la solución. Por lo tanto, cada selección es localmente óptima.}
 	
 	\item \textbf{Conjunto finito de elementos}: Dado que el conjunto de elementos es finito, el algoritmo termina en un número finito de pasos. En cada iteración, se elimina al menos un elemento del conjunto de candidatos, lo que garantiza que el proceso no continúe indefinidamente. Además, no es necesario utilizar todos los elementos disponibles, ya que solo se seleccionan aquellos que contribuyen a maximizar el valor sin exceder la capacidad de la mochila.
 	
@@ -107,9 +107,9 @@ Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo
         \]
 \end{itemize}
 
-\subsubsection*{Pseudocódigo}
-\begin{algorithmic}[1]
-\Procedure{UnboundedKnapsack}{$W, \texttt{weights}, \texttt{values}$}
+\subsubsection*{Pseudocódigo Unbounded Knapsack}
+\begin{algorithm}
+	\State{$W, \texttt{weights}, \texttt{values}$}
     \State Inicializar arreglo $\text{DP}[0 \dots W]$ con 0's
     \For{$i = 1$ to $W$}
         \For{$j = 0$ to $n-1$}
@@ -120,7 +120,7 @@ Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo
     \EndFor
     \State \Return $\text{DP}[W]$
 \EndProcedure
-\end{algorithmic}
+\end{algorithm}
 
 \subsubsection*{Complejidad}
 \begin{itemize}
@@ -147,7 +147,35 @@ La demostración se basa en inducción matemática:
 
 \subsubsection*{Optimalidad del orden}
 El procesamiento en orden ascendente de capacidades asegura que al calcular $\text{DP}[i]$, todos los valores $\text{DP}[k]$ para $k < i$ ya han sido computados correctamente, permitiendo reutilizar soluciones previas.
-\end{algorithmic}
+
+\section{Algoritmo de 2-aproximación}
+Con información de \cite{Rhee2016}
+
+Comencemos por describir un algoritmo que garantiza una solución dentro de un factor de 2 del valor óptimo. Supongamos que el artículo $ j $ tiene la mayor densidad de beneficio, definida como $ p_i / w_i $, donde $ p_i $ es el beneficio del artículo $ i $ y $ w_i $ es su peso. Denotamos $ z_L $ como el valor objetivo obtenido al seleccionar tantas unidades del artículo $ j $ como sea posible sin exceder la capacidad de la mochila $ C $. Formalmente:
+\[
+z_L = p_j \lfloor C / w_j \rfloor,
+\]
+donde $ \lfloor C / w_j \rfloor $ representa el número máximo de unidades enteras del artículo $ j $ que caben en la mochila.
+
+Es importante notar que si se relaja la restricción de integridad (es decir, si se permite fraccionar los artículos), el valor objetivo óptimo sería:
+\[
+z = p_j (C / w_j),
+\]
+el cual constituye una cota superior para el valor óptimo $ z^* $ bajo las restricciones originales. Por lo tanto, se cumple que:
+\[
+z_L \leq z^* \leq z.
+\]
+
+Además, dado que $ z = z_L + p_j \epsilon $, donde $ 0 \leq \epsilon < 1 $, se deduce que:
+\[
+z \leq 2z_L.
+\]
+
+En consecuencia, tenemos que:
+\[
+z^* \leq 2z_L,
+\]
+lo cual implica que el algoritmo que selecciona únicamente el artículo con mayor densidad de beneficio y llena la mochila con este tipo de elementos constituye una $ 2 $-aproximación al valor óptimo del problema.
 
 
 \chapter{Problema de Scheduling}
@@ -290,22 +318,22 @@ El procesamiento en orden ascendente de capacidades asegura que al calcular $\te
 	Primero consideramos un algoritmo greedy muy simple para el problema. El algoritmo hace un recorrido por los trabajos en cualquier orden; cuando llega al trabajo \( j \), lo asigna a la máquina cuya carga sea la más pequeña hasta ese momento.
 	
 
-% \begin{algorithm}
-% 	\caption{Greedy-Balance}
-% 	\label{alg:greedy-balance}
-% 		\State Empezar sin trabajos asignados
-% 		\For{cada máquina \( M_i \)}
-% 		\State \( T_i \gets 0 \) \Comment{Inicializar la carga de la máquina}
-% 		\State \( A(i) \gets \emptyset \) \Comment{Inicializar el conjunto de trabajos asignados a \( M_i \)}
-% 		\EndFor
+\begin{algorithm}
+	\caption{Greedy-Balance}
+	\label{alg:greedy-balance}
+		\State Empezar sin trabajos asignados
+		\For{cada máquina \( M_i \)}
+		\State \( T_i \gets 0 \) \Comment{Inicializar la carga de la máquina}
+		\State \( A(i) \gets \emptyset \) \Comment{Inicializar el conjunto de trabajos asignados a \( M_i \)}
+		\EndFor
 		
-% 		\For{cada trabajo \( j = 1, \dots, n \)}
-% 		\State Sea \( M_i \) la máquina con la menor carga
-% 		\State Asignar el trabajo \( j \) a la máquina \( M_i \)
-% 		\State \( A(i) \gets A(i) \cup \{j\} \)
-% 		\State \( T_i \gets T_i + t_j \)
-% 		\EndFor
-% \end{algorithm}
+		\For{cada trabajo \( j = 1, \dots, n \)}
+		\State Sea \( M_i \) la máquina con la menor carga
+		\State Asignar el trabajo \( j \) a la máquina \( M_i \)
+		\State \( A(i) \gets A(i) \cup \{j\} \)
+		\State \( T_i \gets T_i + t_j \)
+		\EndFor
+\end{algorithm}
 
 	
 	\subsection*{Análisis del Algoritmo}
@@ -362,19 +390,19 @@ El procesamiento en orden ascendente de capacidades asegura que al calcular $\te
 	
 	Así, ahora analizamos la variante del algoritmo greedy que primero ordena los trabajos en orden decreciente de tiempo de procesamiento y luego procede como antes. Demostraremos que la asignación resultante tiene un makespan que es, como máximo, 1.5 veces el óptimo.
 	
-	% \begin{algorithm}
-	% 	\caption{Sorted-Balance}
-	% 		\State Iniciar sin trabajos asignados.
-	% 		\State Asignar \( T_i = 0 \) y \( A(i) = \emptyset \) para todas las máquinas \( M_i \).
-	% 		\State Ordenar los trabajos en orden decreciente de tiempos de procesamiento \( t_j \).
-	% 		\State Suponer que \( t_1 \geq t_2 \geq \dots \geq t_n \).
-	% 		\For{cada trabajo \( j = 1, \dots, n \)}
-	% 		\State Sea \( M_i \) la máquina que alcanza el mínimo \( \min_k T_k \).
-	% 		\State Asignar el trabajo \( j \) a la máquina \( M_i \).
-	% 		\State Actualizar \( A(i) \leftarrow A(i) \cup \{j\} \).
-	% 		\State Actualizar \( T_i \leftarrow T_i + t_j \).
-	% 		\EndFor
-	% \end{algorithm}
+	\begin{algorithm}
+		\caption{Sorted-Balance}
+			\State Iniciar sin trabajos asignados.
+			\State Asignar \( T_i = 0 \) y \( A(i) = \emptyset \) para todas las máquinas \( M_i \).
+			\State Ordenar los trabajos en orden decreciente de tiempos de procesamiento \( t_j \).
+			\State Suponer que \( t_1 \geq t_2 \geq \dots \geq t_n \).
+			\For{cada trabajo \( j = 1, \dots, n \)}
+			\State Sea \( M_i \) la máquina que alcanza el mínimo \( \min_k T_k \).
+			\State Asignar el trabajo \( j \) a la máquina \( M_i \).
+			\State Actualizar \( A(i) \leftarrow A(i) \cup \{j\} \).
+			\State Actualizar \( T_i \leftarrow T_i + t_j \).
+			\EndFor
+	\end{algorithm}
 	
 	La mejora proviene de la siguiente observación. Si tenemos menos de \( m \) trabajos, entonces la solución greedy claramente será óptima, ya que coloca cada trabajo en su propia máquina. Y si tenemos más de \( m \) trabajos, entonces podemos usar la siguiente cota inferior adicional para el óptimo.
 	
@@ -459,5 +487,11 @@ El procesamiento en orden ascendente de capacidades asegura que al calcular $\te
 		Michael R. Garey and David S. Johnson.
 		\textit{Computers and Intractability: A Guide to the Theory of NP-Completeness}.
 		1st ed. W. H. Freeman and Company, 1979.Extraído de página 238.
+		
+		\bibitem{Rhee2016}
+		Donguk Rhee.
+		\textit{Esquemas de Aproximación Polinomial Más Rápidos para Problemas de la Mochila}.
+		Tesis de Maestría en Investigación de Operaciones, Instituto Tecnológico de Massachusetts, 2016.
+		
 	\end{thebibliography}
 \end{document}
