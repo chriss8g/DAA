@@ -17,7 +17,6 @@
 *.run.xml
 
 # Ignorar archivos de salida (PDF, DVI, etc.)
-*.pdf
 *.dvi
 *.ps
 
