@@ -6,6 +6,7 @@
 \usepackage{algorithm}      % Para el entorno algorithm
 \usepackage{algpseudocode} % Para el entorno algorithmic
 \usepackage{amsthm}
+\usepackage{algorithmic} 
 
 \newtheorem{theorem}{Teorema} % Define el entorno "theorem"
 
@@ -59,6 +60,69 @@ Demostramos que esta reducción es válida mostrando que la solución obtenida m
 
 \section*{Conclusión}
 Mediante esta reducción, hemos demostrado que cualquier instancia de \textbf{UK} puede ser transformada en una secuencia de instancias de \textbf{K}. Como \textbf{K} es un problema NP-completo, concluimos que \textbf{UK} es NP-duro.
+
+\section{Algoritmo exacto}
+El problema de la \textbf{mochila ilimitada} consiste en seleccionar elementos con pesos y valores dados para maximizar el valor total sin exceder la capacidad $W$, permitiendo múltiples copias del mismo elemento. 
+
+\subsection*{Subestructura óptima}
+La propiedad clave es que la solución óptima para capacidad $i$ puede construirse a partir de soluciones óptimas para capacidades menores. Si un elemento de peso $w_j$ se incluye en la solución óptima para capacidad $i$, entonces el valor óptimo será $v_j + \text{DP}[i - w_j]$.
+
+\subsection*{Idea intuitiva}
+Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo alcanzable con capacidad $i$. Comenzamos con capacidad 0 y progresivamente resolvemos capacidades mayores usando soluciones ya calculadas.
+
+%------------------------------------------
+\subsection{Programación dinámica}
+\subsubsection*{Estados y transiciones}
+\begin{itemize}
+    \item \textbf{Estado}: $\text{DP}[i]$ representa el valor máximo para capacidad $i$.
+    \item \textbf{Inicialización}: $\text{DP}[0] = 0$ (ningún elemento cabe en capacidad 0).
+    \item \textbf{Transición}: Para cada capacidad $i$ y elemento $j$:
+        \[
+        \text{DP}[i] = \max\left(\text{DP}[i],\, v_j + \text{DP}[i - w_j]\right) \quad \text{si } w_j \leq i
+        \]
+\end{itemize}
+
+\subsubsection*{Pseudocódigo}
+\begin{algorithmic}[1]
+\Procedure{UnboundedKnapsack}{$W, \texttt{weights}, \texttt{values}$}
+    \State Inicializar arreglo $\text{DP}[0 \dots W]$ con 0's
+    \For{$i = 1$ to $W$}
+        \For{$j = 0$ to $n-1$}
+            \If{$\texttt{weights}[j] \leq i$}
+                \State $\text{DP}[i] \gets \max(\text{DP}[i],\, \text{DP}[i - \texttt{weights}[j]] + \texttt{values}[j])$
+            \EndIf
+        \EndFor
+    \EndFor
+    \State \Return $\text{DP}[W]$
+\EndProcedure
+\end{algorithmic}
+
+\subsubsection*{Complejidad}
+\begin{itemize}
+    \item \textbf{Temporal}: $O(n \cdot W)$ (dos bucles anidados: $W$ iteraciones externas, $n$ internas).
+    \item \textbf{Espacial}: $O(W)$ (solo se almacena un arreglo de tamaño $W+1$).
+\end{itemize}
+
+%------------------------------------------
+\subsection{Análisis del algoritmo}
+\subsubsection*{Correctitud}
+La demostración se basa en inducción matemática:
+
+\begin{itemize}
+    \item \textbf{Caso base}: $\text{DP}[0] = 0$ es trivialmente correcto.
+    
+    \item \textbf{Hipótesis inductiva}: Supongamos que $\text{DP}[k]$ es óptimo para todo $k < i$.
+    
+    \item \textbf{Paso inductivo}: Para capacidad $i$, consideramos todos los elementos $j$ con $w_j \leq i$. Si el elemento $j$ es parte de la solución óptima, entonces:
+    \[
+    \text{DP}[i] = v_j + \text{DP}[i - w_j]
+    \]
+    Por hipótesis inductiva, $\text{DP}[i - w_j]$ ya es óptimo. Al maximizar sobre todos los $j$, garantizamos que $\text{DP}[i]$ también es óptimo.
+\end{itemize}
+
+\subsubsection*{Optimalidad del orden}
+El procesamiento en orden ascendente de capacidades asegura que al calcular $\text{DP}[i]$, todos los valores $\text{DP}[k]$ para $k < i$ ya han sido computados correctamente, permitiendo reutilizar soluciones previas.
+\end{algorithmic}
 
 
 \chapter{Problema de Scheduling}
