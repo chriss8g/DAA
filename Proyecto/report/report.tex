@@ -89,7 +89,7 @@ Mediante esta reducción, hemos demostrado que cualquier instancia de \textbf{K}
 \section{Algoritmo exacto}
 
 Ataquemos el problema con Programación dinámica.
-Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo alcanzable con capacidad $i$. Comenzamos con capacidad 0 y progresivamente resolvemos capacidades mayores usando soluciones ya calculadas.
+Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo alcanzable con una mochila de capacidad $i$. Comenzamos con capacidad 0 y progresivamente resolvemos capacidades mayores usando soluciones ya calculadas.
 
 \subsection*{Subestructura óptima}
 La propiedad clave es que la solución óptima para capacidad $i$ puede construirse a partir de soluciones óptimas para capacidades menores. Si un elemento de peso $w_j$ se incluye en la solución óptima para capacidad $i$, entonces el valor óptimo será $v_j + \text{DP}[i - w_j]$.
