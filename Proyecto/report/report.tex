@@ -18,6 +18,49 @@
 	\maketitle
 	\tableofcontents
 	
+	\chapter{Problema de Mochila Ilimitada}
+
+\section*{Introducción}
+El problema \textbf{Unbounded Knapsack (UK)} es una variante del problema clásico de la mochila (\textbf{Knapsack (K)}) en la cual los elementos pueden ser seleccionados múltiples veces. Para demostrar que \textbf{UK} es NP-duro, realizamos una reducción desde \textbf{UK} a \textbf{K}. La idea principal es transformar una instancia de \textbf{UK} en una instancia equivalente de \textbf{K}, resolviendo iterativamente subproblemas hasta obtener una solución completa.
+
+\section*{Definición del Problema}
+Dada una instancia de \textbf{UK} con:
+\begin{itemize}
+    \item Un conjunto de $n$ elementos, donde cada elemento $i$ tiene un peso $w_i$ y un valor $v_i$.
+    \item Una capacidad máxima de la mochila $W$.
+\end{itemize}
+El objetivo es maximizar el valor total de los elementos seleccionados sin exceder la capacidad $W$, permitiendo que cada elemento pueda ser seleccionado múltiples veces.
+
+Por otro lado, el problema \textbf{K} es similar, pero cada elemento solo puede ser seleccionado una vez.
+
+\section*{Reducción de UK a K}
+La reducción se realiza mediante el siguiente algoritmo:
+
+\begin{enumerate}
+    \item Ejecutar el algoritmo de \textbf{UK} sobre la instancia original con capacidad $W$. Sea $S_1$ el conjunto de elementos seleccionados (sin repeticiones) y $P_1$ el peso total de estos elementos.
+    
+    \item Resolver un nuevo subproblema de \textbf{UK} utilizando todos los elementos excepto los de $S_1$, con una capacidad de $W - P_1$.
+    
+    \item Repetir este proceso iterativamente: en cada paso, resolver un subproblema de \textbf{UK} con los elementos restantes y la capacidad residual actualizada.
+    
+    \item El algoritmo termina cuando el subconjunto devuelto por el algoritmo	 es vacío.
+\end{enumerate}
+
+\section*{Demostración de Correctitud}
+Demostramos que esta reducción es válida mostrando que la solución obtenida mediante el algoritmo descrito es equivalente a la solución óptima de \textbf{K}:
+
+\begin{itemize}
+    \item En cada iteración, el algoritmo selecciona un subconjunto de elementos que maximiza el valor dentro de la capacidad residual. Esto asegura que no se pierda ninguna combinación potencialmente óptima.
+    
+    \item Al eliminar los elementos seleccionados en cada iteración, garantizamos que las soluciones parciales no se superpongan, lo que simula el comportamiento de \textbf{UK}.
+    
+    \item Finalmente, cuando el algoritmo devuelve un conjunto vacío, se ha utilizado toda la capacidad disponible de la mochila, y la solución acumulada es óptima.
+\end{itemize}
+
+\section*{Conclusión}
+Mediante esta reducción, hemos demostrado que cualquier instancia de \textbf{UK} puede ser transformada en una secuencia de instancias de \textbf{K}. Como \textbf{K} es un problema NP-completo, concluimos que \textbf{UK} es NP-duro.
+
+
 	\chapter{Problema de Balanceo de Carga}
 	{Con información de \cite{Kleinberg2005} y \cite{Garey1979}\\\\}
 	Formulamos el \textbf{Problema de Balanceo de Carga} de la siguiente manera. Se nos da un conjunto de \( m \) máquinas \( M_1, \dots, M_m \) y un conjunto de \( n \) trabajos; cada trabajo \( j \) tiene un tiempo de procesamiento \( t_j \). Buscamos asignar cada trabajo a una de las máquinas de manera que las cargas colocadas en todas las máquinas estén lo más \textit{balanceadas} posible.
@@ -158,22 +201,22 @@
 	Primero consideramos un algoritmo greedy muy simple para el problema. El algoritmo hace un recorrido por los trabajos en cualquier orden; cuando llega al trabajo \( j \), lo asigna a la máquina cuya carga sea la más pequeña hasta ese momento.
 	
 
-\begin{algorithm}
-	\caption{Greedy-Balance}
-	\label{alg:greedy-balance}
-		\State Empezar sin trabajos asignados
-		\For{cada máquina \( M_i \)}
-		\State \( T_i \gets 0 \) \Comment{Inicializar la carga de la máquina}
-		\State \( A(i) \gets \emptyset \) \Comment{Inicializar el conjunto de trabajos asignados a \( M_i \)}
-		\EndFor
+% \begin{algorithm}
+% 	\caption{Greedy-Balance}
+% 	\label{alg:greedy-balance}
+% 		\State Empezar sin trabajos asignados
+% 		\For{cada máquina \( M_i \)}
+% 		\State \( T_i \gets 0 \) \Comment{Inicializar la carga de la máquina}
+% 		\State \( A(i) \gets \emptyset \) \Comment{Inicializar el conjunto de trabajos asignados a \( M_i \)}
+% 		\EndFor
 		
-		\For{cada trabajo \( j = 1, \dots, n \)}
-		\State Sea \( M_i \) la máquina con la menor carga
-		\State Asignar el trabajo \( j \) a la máquina \( M_i \)
-		\State \( A(i) \gets A(i) \cup \{j\} \)
-		\State \( T_i \gets T_i + t_j \)
-		\EndFor
-\end{algorithm}
+% 		\For{cada trabajo \( j = 1, \dots, n \)}
+% 		\State Sea \( M_i \) la máquina con la menor carga
+% 		\State Asignar el trabajo \( j \) a la máquina \( M_i \)
+% 		\State \( A(i) \gets A(i) \cup \{j\} \)
+% 		\State \( T_i \gets T_i + t_j \)
+% 		\EndFor
+% \end{algorithm}
 
 	
 	\subsection*{Análisis del Algoritmo}
@@ -230,19 +273,19 @@
 	
 	Así, ahora analizamos la variante del algoritmo greedy que primero ordena los trabajos en orden decreciente de tiempo de procesamiento y luego procede como antes. Demostraremos que la asignación resultante tiene un makespan que es, como máximo, 1.5 veces el óptimo.
 	
-	\begin{algorithm}
-		\caption{Sorted-Balance}
-			\State Iniciar sin trabajos asignados.
-			\State Asignar \( T_i = 0 \) y \( A(i) = \emptyset \) para todas las máquinas \( M_i \).
-			\State Ordenar los trabajos en orden decreciente de tiempos de procesamiento \( t_j \).
-			\State Suponer que \( t_1 \geq t_2 \geq \dots \geq t_n \).
-			\For{cada trabajo \( j = 1, \dots, n \)}
-			\State Sea \( M_i \) la máquina que alcanza el mínimo \( \min_k T_k \).
-			\State Asignar el trabajo \( j \) a la máquina \( M_i \).
-			\State Actualizar \( A(i) \leftarrow A(i) \cup \{j\} \).
-			\State Actualizar \( T_i \leftarrow T_i + t_j \).
-			\EndFor
-	\end{algorithm}
+	% \begin{algorithm}
+	% 	\caption{Sorted-Balance}
+	% 		\State Iniciar sin trabajos asignados.
+	% 		\State Asignar \( T_i = 0 \) y \( A(i) = \emptyset \) para todas las máquinas \( M_i \).
+	% 		\State Ordenar los trabajos en orden decreciente de tiempos de procesamiento \( t_j \).
+	% 		\State Suponer que \( t_1 \geq t_2 \geq \dots \geq t_n \).
+	% 		\For{cada trabajo \( j = 1, \dots, n \)}
+	% 		\State Sea \( M_i \) la máquina que alcanza el mínimo \( \min_k T_k \).
+	% 		\State Asignar el trabajo \( j \) a la máquina \( M_i \).
+	% 		\State Actualizar \( A(i) \leftarrow A(i) \cup \{j\} \).
+	% 		\State Actualizar \( T_i \leftarrow T_i + t_j \).
+	% 		\EndFor
+	% \end{algorithm}
 	
 	La mejora proviene de la siguiente observación. Si tenemos menos de \( m \) trabajos, entonces la solución greedy claramente será óptima, ya que coloca cada trabajo en su propia máquina. Y si tenemos más de \( m \) trabajos, entonces podemos usar la siguiente cota inferior adicional para el óptimo.
 	
