@@ -87,13 +87,12 @@ Para demostrar que la reducción de \textbf{UK} a \textbf{K} es válida, debemos
 Mediante esta reducción, hemos demostrado que cualquier instancia de \textbf{K} puede ser transformada en una secuencia de instancias de \textbf{UK}. Dado que \textbf{K} es un problema NP-completo, concluimos que \textbf{UK} es NP-duro.
 
 \section{Algoritmo exacto}
-El problema de la \textbf{mochila ilimitada} consiste en seleccionar elementos con pesos y valores dados para maximizar el valor total sin exceder la capacidad $W$, permitiendo múltiples copias del mismo elemento. 
+
+Ataquemos el problema con Programación dinámica.
+Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo alcanzable con capacidad $i$. Comenzamos con capacidad 0 y progresivamente resolvemos capacidades mayores usando soluciones ya calculadas.
 
 \subsection*{Subestructura óptima}
 La propiedad clave es que la solución óptima para capacidad $i$ puede construirse a partir de soluciones óptimas para capacidades menores. Si un elemento de peso $w_j$ se incluye en la solución óptima para capacidad $i$, entonces el valor óptimo será $v_j + \text{DP}[i - w_j]$.
-
-\subsection*{Idea intuitiva}
-Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo alcanzable con capacidad $i$. Comenzamos con capacidad 0 y progresivamente resolvemos capacidades mayores usando soluciones ya calculadas.
 
 %------------------------------------------
 \subsection{Programación dinámica}
@@ -145,9 +144,8 @@ La demostración se basa en inducción matemática:
     Por hipótesis inductiva, $\text{DP}[i - w_j]$ ya es óptimo. Al maximizar sobre todos los $j$, garantizamos que $\text{DP}[i]$ también es óptimo.
 \end{itemize}
 
-\subsubsection*{Optimalidad del orden}
 El procesamiento en orden ascendente de capacidades asegura que al calcular $\text{DP}[i]$, todos los valores $\text{DP}[k]$ para $k < i$ ya han sido computados correctamente, permitiendo reutilizar soluciones previas.
-\end{algorithmic}
+
 
 
 \chapter{Problema de Scheduling}
