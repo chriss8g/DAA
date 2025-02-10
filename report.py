@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+import time
 
 # ===========================
 # Algoritmo 2-Aproximación
@@ -91,13 +92,18 @@ def compare_algorithms(test_cases):
     ratios = []
     num_tasks_list = []
     num_servers_list = []
+    times_2_approx = []
+    times_bb = []
     
     for tasks, m in test_cases:
-        # Ejecutar algoritmos
+        # Ejecutar algoritmos y medir tiempos
+        start_time = time.time()
         makespan_2_approx = load_balancing_2_approximation(tasks, m)
-        print("aprox")
+        time_2_approx = time.time() - start_time
+        
+        start_time = time.time()
         makespan_bb = branch_and_bound_optimized(tasks, m)
-        print("exact")
+        time_bb = time.time() - start_time
         
         # Guardar resultados
         results_2_approx.append(makespan_2_approx)
@@ -105,29 +111,42 @@ def compare_algorithms(test_cases):
         ratios.append(makespan_2_approx / makespan_bb)
         num_tasks_list.append(len(tasks))
         num_servers_list.append(m)
+        times_2_approx.append(time_2_approx)
+        times_bb.append(time_bb)
     
-    # Graficar comparación de soluciones
-    plt.figure(figsize=(12, 6))
+    # Crear una figura con dos subgráficos
+    plt.figure(figsize=(14, 10))
+    
+    # Gráfico 1: Comparación de Makespan
+    plt.subplot(2, 1, 1)
     plt.plot(range(len(test_cases)), results_2_approx, label="2-Aproximación", marker='o')
     plt.plot(range(len(test_cases)), results_bb, label="Branch and Bound", marker='x')
-    plt.xlabel("Casos de Prueba")
+    # plt.xlabel("Casos de Prueba")
     plt.ylabel("Makespan")
     plt.title("Comparación de Soluciones")
     plt.legend()
     plt.grid()
-    plt.show()
     
-    # Graficar relación entre soluciones
-    plt.figure(figsize=(12, 6))
-    plt.plot(range(len(test_cases)), ratios, label="Relación (2-Aprox / BB)", marker='o', color='green')
-    plt.axhline(y=2, color='red', linestyle='--', label="Límite Teórico (2)")
+    # Añadir etiquetas con tiempos de ejecución
+    for i, (t2, tb) in enumerate(zip(times_2_approx, times_bb)):
+        plt.text(i, results_2_approx[i], f"{t2:.2f}s", fontsize=8, ha='center', va='bottom')
+        plt.text(i, results_bb[i], f"{tb:.2f}s", fontsize=8, ha='center', va='top')
+    
+    # Gráfico 2: Ratios entre los algoritmos
+    plt.subplot(2, 1, 2)
+    plt.plot(range(len(test_cases)), ratios, label="Ratio (2-Aprox / B&B)", marker='o', color='green')
     plt.xlabel("Casos de Prueba")
-    plt.ylabel("Relación de Makespan")
-    plt.title("Relación entre Soluciones")
+    plt.ylabel("Ratio")
+    plt.title("Relación entre las Soluciones (2-Aproximación / Branch and Bound)")
     plt.legend()
     plt.grid()
-    plt.show()
     
+    # Añadir etiquetas con los ratios
+    for i, r in enumerate(ratios):
+        plt.text(i, r, f"{r:.2f}", fontsize=8, ha='center', va='bottom')
+    
+    plt.tight_layout()
+    plt.show()
 
 # ===========================
 # Ejecución Principal
@@ -135,7 +154,7 @@ def compare_algorithms(test_cases):
 if __name__ == "__main__":
     # Parámetros para generar casos de prueba
     num_cases = 20          # Número de casos de prueba
-    max_tasks = 10          # Máximo número de tareas
+    max_tasks = 15         # Máximo número de tareas
     max_servers = 5         # Máximo número de servidores
     max_task_time = 100     # Máximo tiempo de una tarea
     
