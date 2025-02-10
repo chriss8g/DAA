@@ -207,6 +207,14 @@ z^* \leq 2z_L,
 \]
 lo cual implica que el algoritmo que selecciona únicamente el artículo con mayor densidad de beneficio y llena la mochila con este tipo de elementos constituye una $ 2 $-aproximación al valor óptimo del problema.
 
+\section{Experimentación gráfica}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{Figure_2}
+	\caption{Comparación gráfica entre los algoritmos}
+	\label{fig:figure1}
+\end{figure}
 
 	\chapter{Problema Load Balancing}
 	
@@ -529,58 +537,15 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		\[
 		T_i \leq \frac{3}{2} T^*.
 		\]
+		
+	\section{Experimentación gráfica}
 	
-	\begin{figure}
+	\begin{figure}[H]
 		\centering
 		\includegraphics[width=1\linewidth]{Figure_1}
 		\caption{Comparación gráfica entre los algoritmos}
 		\label{fig:figure1}
 	\end{figure}
-	
-		
-	
-	% \chapter{Problema de Load Balancing con Precedencia}
-	
-	% El problema de \textbf{Load Balancing con Precedencia} se define como sigue:
-	
-	% \textbf{Entrada}:
-	% \begin{itemize}
-	% 	\item Un conjunto de $ n $ tareas $ T = \{t_1, t_2, \dots, t_n\} $.
-	% 	\item Cada tarea $ t_i $ tiene un tiempo de procesamiento $ p_i > 0 $.
-	% 	\item Un grafo dirigido acíclico (DAG) $ G = (T, E) $ que representa las restricciones de precedencia. Una arista $ (t_i, t_j) \in E $ indica que la tarea $ t_i $ debe completarse antes de que $ t_j $ pueda comenzar.
-	% 	\item $ m $ procesadores idénticos disponibles para ejecutar las tareas.
-	% \end{itemize}
-	
-	% \textbf{Salida}:
-	% \begin{itemize}
-	% 	\item Una asignación de tareas a procesadores y un horario que minimice el \textbf{makespan} $ C_{\text{max}} $, definido como el tiempo máximo de finalización de todas las tareas:
-	% 	\[
-	% 	C_{\text{max}} = \max_{j=1, \dots, m} \sum_{t_i \in S_j} p_i,
-	% 	\]
-	% 	donde $ S_j $ es el conjunto de tareas asignadas al procesador $ j $.
-	% 	\item El horario debe respetar las restricciones de precedencia: si $ (t_i, t_j) \in E $, entonces $ t_i $ debe completarse antes de que $ t_j $ comience.
-	% \end{itemize}
-	
-	% \section{Demostración de que Load Balancing con Precedencia es NP-duro}
-	
-	% Para demostrar que el problema de \textbf{Load Balancing con Precedencia} es NP-duro, realizamos una reducción desde el problema de \textbf{Load Balancing sin precedencia}.
-	
-	% \subsubsection*{Construcción de la Instancia}
-	
-	% Dada una instancia del problema de \textbf{Load Balancing sin precedencia}, construimos una instancia del problema de \textbf{Load Balancing con Precedencia} como sigue:
-	% \begin{itemize}
-	% 	\item Mantenemos el mismo conjunto de tareas $ T $ y sus tiempos de procesamiento $ p_1, p_2, \dots, p_n $.
-	% 	\item No añadimos ninguna restricción de precedencia, es decir, el grafo $ G = (T, E) $ es vacío ($ E = \emptyset $).
-	% \end{itemize}
-	
-	% \subsubsection*{Equivalencia}
-	
-	% - Si podemos resolver el problema de \textbf{Load Balancing con Precedencia} (con $ E = \emptyset $), entonces también podemos resolver el problema de \textbf{Load Balancing sin precedencia}.\\
-	% - Por lo tanto, ambos problemas son equivalentes cuando no hay restricciones de precedencia.
-	
-	% \subsubsection*{Complejidad de la Reducción}
-	
-	% La construcción de la instancia del problema de \textbf{Load Balancing con Precedencia} a partir del problema de \textbf{Load Balancing sin precedencia} es trivial y se realiza en tiempo polinomial.
 	
 	
 	
