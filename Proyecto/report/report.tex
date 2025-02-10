@@ -19,10 +19,41 @@
 	\maketitle
 	\tableofcontents
 	
-	\chapter{Problema de Mochila Ilimitada}
+	\chapter{Problema de Gestión Agrícola}
+	
+	
+	La gestión agrícola moderna enfrenta desafíos críticos relacionados con la optimización de recursos, tanto en la planificación de cultivos como en la asignación eficiente de mano de obra. Estos problemas requieren enfoques algorítmicos robustos para maximizar beneficios económicos y minimizar tiempos de ejecución, asegurando un uso sostenible de los recursos disponibles. En este capítulo, se formalizan dos problemas centrales en este contexto y se establece su relación con problemas clásicos de optimización combinatoria.
+
+	\section{Rotación de Cultivos con Ventanas Temporales}
+	Se desea seleccionar cultivos para sembrar en un período determinado, considerando:
+	\begin{itemize}
+		\item \textbf{Prioridad económica}: Cada cultivo genera un beneficio monetario asociado.
+		\item \textbf{Tiempo de ocupación}: Período durante el cual la tierra está ocupada (desde la siembra hasta la cosecha).
+		\item \textbf{Ventana temporal fija}: Duración total disponible para la siembra.
+	\end{itemize}
+	
+	\textbf{Objetivo}: Seleccionar un conjunto de cultivos (con posibles repeticiones) que maximice el beneficio total sin exceder la ventana temporal. Este problema es equivalente al \textbf{Problema de la Mochila Ilimitada (Unbounded Knapsack)}, donde:
+	\begin{itemize}
+		\item \textit{Peso del elemento} $\equiv$ Tiempo de ocupación del cultivo.
+		\item \textit{Valor del elemento} $\equiv$ Beneficio económico del cultivo.
+		\item \textit{Capacidad de la mochila} $\equiv$ Ventana temporal disponible.
+	\end{itemize}
+	
+	\section{Asignación de Tareas con Restricciones de Precedencia}
+	Se debe distribuir un conjunto de tareas agrícolas (ej: podar, regar, cosechar) entre un grupo de obreros, considerando:
+	\begin{itemize}
+		\item \textbf{Tiempo de ejecución}: Cada tarea requiere un tiempo específico.
+		\item \textbf{Precedencia}: Algunas tareas deben completarse antes que otras (ej: sembrar antes de regar).
+		\item \textbf{Recursos limitados}: Número fijo de obreros disponibles.
+	\end{itemize}
+	
+	\textbf{Objetivo}: Asignar tareas a obreros minimizando el tiempo total de ejecución (\textit{makespan}), respetando las restricciones de precedencia. Este problema se modela como una variante del \textbf{Balanceo de Carga (Load Balancing)} en sistemas distribuidos.
+	
+	
+	\chapter{Problema Unbounded Knapsack}
 El problema \textbf{Unbounded Knapsack (UK)} es una extensión del clásico problema de la mochila (\textbf{Knapsack (K)}), donde los elementos pueden ser seleccionados múltiples veces. Este problema tiene aplicaciones en diversas áreas, como la logística, la planificación de recursos y la optimización de inventarios. En este texto, exploraremos la relación entre \textbf{UK} y \textbf{K}, y demostraremos que \textbf{UK} es un problema NP-duro mediante una reducción formal desde \textbf{UK} a \textbf{K}.
 
-\section{Demostración de que el problema UK es NP-duro}
+\section{Demostración de que Unbounded Knapsack es NP-duro}
 
 Para demostrar que el problema \textbf{Unbounded Knapsack (UK)} es NP-duro, realizaremos una reducción desde \textbf{UK} a \textbf{Knapsack (K)}, que es un problema NP-completo. La idea central es transformar una instancia de \textbf{UK} en una instancia equivalente de \textbf{K}, resolviendo subproblemas de manera iterativa hasta obtener una solución completa.
 
@@ -38,7 +69,7 @@ El objetivo es maximizar el valor total de los elementos seleccionados sin exced
 
 \subsection*{Reducción de UK a K}
 
-La reducción se realiza mediante el algoritmo \ref{uk_to_k}
+La reducción se realiza mediante el algoritmo siguiente:
 
 
 \begin{algorithm}\label{uk_to_k}\caption{Reducción de UK a K}
@@ -76,19 +107,19 @@ Para demostrar que la reducción de \textbf{UK} a \textbf{K} es válida, debemos
 \begin{itemize}
 	\item \textbf{No repetición de elementos}: En cada iteración, el algoritmo selecciona un subconjunto de elementos \textbf{sin repeticiones}, es decir, cada elemento se incluye en la mochila a lo sumo una vez. Esto es consistente con la definición de \textbf{K}, donde los elementos no pueden repetirse.
 	
-	\item \textcolor{yellow}{\textbf{Optimalidad local}: En cada paso, el algoritmo selecciona un subconjunto de elementos que maximiza el valor dentro de la capacidad residual disponible. Si no se eligiera la mejor combinación en una iteración, existiría otra selección con mayor valor que podría reemplazarla, contradiciendo la optimalidad de la solución. Por lo tanto, cada selección es localmente óptima.}
+	\item \textbf{Optimalidad}: Los elementos sin repetición de cada iteración de UK son parte de la solución óptima de K ya que si alguno no lo fuera es porque este puede ser remplazado por otro u otros que en total maximizen la ganancia, pero en tal caso UK los hubiera seleccionados.
 	
-	\item \textbf{Conjunto finito de elementos}: Dado que el conjunto de elementos es finito, el algoritmo termina en un número finito de pasos. En cada iteración, se elimina al menos un elemento del conjunto de candidatos, lo que garantiza que el proceso no continúe indefinidamente. Además, no es necesario utilizar todos los elementos disponibles, ya que solo se seleccionan aquellos que contribuyen a maximizar el valor sin exceder la capacidad de la mochila.
+	\item \textbf{Conjunto finito de elementos}: Dado que el conjunto de elementos es finito, el algoritmo termina en un número finito de pasos. En cada iteración, se elimina al menos un elemento del conjunto de candidatos, lo que garantiza que el proceso no continúe indefinidamente.
 	
 	\item \textbf{Complejidad de la transformación}: La reducción realiza una transformación en tiempo polinomial. En el peor caso, el algoritmo ejecuta \textbf{UK} una vez por cada elemento distinto, lo que resulta en una complejidad de \( O(n \cdot T_{\text{UK}}) \), donde \( T_{\text{UK}} \) es la complejidad de resolver \textbf{UK}. Si \textbf{UK} fuera resoluble en tiempo polinomial, entonces \textbf{K} también lo sería, ya que la transformación preserva la clase de complejidad.
 	
 	\item \textbf{Uso completo de la capacidad}: El algoritmo termina cuando no se pueden agregar más elementos sin exceder la capacidad de la mochila. Esto asegura que la capacidad \( W \) se utiliza de manera óptima, y la solución acumulada es equivalente a la solución óptima de \textbf{K}.
 \end{itemize}
-Mediante esta reducción, hemos demostrado que cualquier instancia de \textbf{K} puede ser transformada en una secuencia de instancias de \textbf{UK}. Dado que \textbf{K} es un problema NP-completo, concluimos que \textbf{UK} es NP-duro.
+Mediante esta reducción, hemos demostrado que cualquier instancia de \textbf{K} puede ser transformada en una secuencia de tamaño polinomial de instancias de \textbf{UK}. Dado que \textbf{K} es un problema NP-completo, concluimos que \textbf{UK} es NP-duro.
 
 \section{Algoritmo exacto}
 
-Ataquemos el problema con Programación dinámica.
+Ataquemos el problema con Programación dinámica. La idea de solución es similar a la vista en \cite{CLRS2009} para el problema 0/1 Knapsack.
 Utilizamos un arreglo $\text{DP}$ donde $\text{DP}[i]$ almacena el valor máximo alcanzable con una mochila de capacidad $i$. Comenzamos con capacidad 0 y progresivamente resolvemos capacidades mayores usando soluciones ya calculadas.
 
 \subsection*{Subestructura óptima}
@@ -106,8 +137,8 @@ La propiedad clave es que la solución óptima para capacidad $i$ puede construi
         \]
 \end{itemize}
 
-\subsubsection*{Pseudocódigo Unbounded Knapsack}
 \begin{algorithm}
+	\caption{Pseudocódigo Unbounded Knapsack}
 	\State{$W, \texttt{weights}, \texttt{values}$}
     \State Inicializar arreglo $\text{DP}[0 \dots W]$ con 0's
     \For{$i = 1$ to $W$}
@@ -147,7 +178,7 @@ La demostración se basa en inducción matemática:
 El procesamiento en orden ascendente de capacidades asegura que al calcular $\text{DP}[i]$, todos los valores $\text{DP}[k]$ para $k < i$ ya han sido computados correctamente, permitiendo reutilizar soluciones previas.
 
 
-\section{Algoritmo de 2-aproximación}
+\section{Algoritmo de aproximación}
 Con información de \cite{Rhee2016}
 
 Comencemos por describir un algoritmo que garantiza una solución dentro de un factor de 2 del valor óptimo. Supongamos que el artículo $ j $ tiene la mayor densidad de beneficio, definida como $ p_i / w_i $, donde $ p_i $ es el beneficio del artículo $ i $ y $ w_i $ es su peso. Denotamos $ z_L $ como el valor objetivo obtenido al seleccionar tantas unidades del artículo $ j $ como sea posible sin exceder la capacidad de la mochila $ C $. Formalmente:
@@ -177,12 +208,13 @@ z^* \leq 2z_L,
 lo cual implica que el algoritmo que selecciona únicamente el artículo con mayor densidad de beneficio y llena la mochila con este tipo de elementos constituye una $ 2 $-aproximación al valor óptimo del problema.
 
 
-\chapter{Problema de Scheduling}
-{Con información de \cite{Kleinberg2005} y \cite{Garey1979}\\\\}
-	\section{Load Balancing}
+	\chapter{Problema Load Balancing}
+	
+	{Con información de \cite{Kleinberg2005} y \cite{Garey1979}\\\\}
+	
 	Formulamos el \textbf{Problema de Load Balancing} de la siguiente manera. Se nos da un conjunto de \( m \) máquinas \( M_1, \dots, M_m \) y un conjunto de \( n \) trabajos; cada trabajo \( j \) tiene un tiempo de procesamiento \( t_j \). Buscamos asignar cada trabajo a una de las máquinas de manera que las cargas colocadas en todas las máquinas estén lo más \textit{balanceadas} posible.
 	
-	Más concretamente, en cualquier asignación de trabajos a máquinas, podemos denotar por \( A(i) \) el conjunto de trabajos asignados a la máquina \( M_i \). Bajo esta asignación, la máquina \( M_i \) necesita trabajar un tiempo total de
+	Más concretamente, en cualquier asignación de trabajos a máquinas, podemos denotar por \( A(i) \) el conjunto de trabajos asignados a la máquina \( M_i \). Bajo esta asignación, la máquina \( M_i \) trabajará un tiempo total de
 	\[
 	T_i = \sum_{j \in A(i)} t_j,
 	\]
@@ -196,17 +228,12 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	Nuestro problema de optimización tiene una versión de decisión: Dado un valor $ M $, ¿existe una asignación de tareas tal que el makespan sea $ \leq M $?
 	A continuación nos apoyaremos del problema de desición y del conocido problema Partition para demostrar que la versión de optimización de Load Balancing es NP duro.
 	
-	\subsection{Demostración de que Load Balancing es NP duro}
+	\section{Demostración de que Load Balancing es NP duro}
 	
-	\begin{theorem}
-		El problema de optimización de Load Balancing es NP duro
-	\end{theorem}
-	
-	\begin{proof}
 		
-	Para demostrar que el problema de decisión es NP-completo, realizamos una reducción desde el problema \textbf{Partition}, primero demostremos que este es NP-completo a su vez reduciéndolo a Subset-Sum.
+	Para demostrar que el problema de decisión es NP-completo, realizamos una reducción desde el problema \textbf{Partition}, primero demostremos que este es NP-completo reduciéndolo a Subset-Sum.
 	
-	\subsubsection{Demostración de que Partition es NP completo}
+	\subsection{Demostración de que Partition es NP completo}
 	
 	Problema Partition:	Dado un conjunto de números $ \{p_1, p_2, \dots, p_n\} $, ¿es posible dividirlo en dos subconjuntos disjuntos $ A $ y $ B $ tales que:
 	\[
@@ -285,7 +312,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	
 	\subsubsection*{Equivalencia}
 	Si existe una asignación de tareas entonces habrá una partición. Si no existe, no existirá la partición. Por lo tanto, resolver el problema de decisión de Load Balancing permite resolver el problema Partition.
-	Como el problema Partition es NP-completo y hemos mostrado que cualquier instancia de Partition puede reducirse en tiempo polinomial a una instancia del problema de decisión de Load Balancing, concluimos que el problema de decisión de Load Balancing es NP-completo.
+	Como el problema Partition es NP-completo y hemos mostrado que cualquier instancia de Partition puede reducirse en tiempo polinomial a una instancia del problema de decisión de Load Balancing, y la solución de este es verificable en tiempo polinomial de forma trivial (pertenece a NP), concluimos que el problema de decisión de Load Balancing es NP-completo.
 	
 	
 	Finalmente, demostramos que el problema de optimización de Load Balancing es NP-duro. Para ello, notamos que:
@@ -302,14 +329,13 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	2. Como el problema de decisión es NP-completo, resolver el problema de optimización implica resolver un problema NP-completo.
 	
 	Por lo tanto, el problema de optimización de Load Balancing es NP-duro.
-		\end{proof}
 	
-		\subsection{Algortimo Exacto}
-		Búsqueda con Backtracking y Poda es una alternativa para resolver el problema de Load Balancing de manera óptima, aunque su escalabilidad está limitada por la complejidad computacional del problema.
+		\section{Algortimo Exacto}
+		Búsqueda con Backtracking y Poda es una alternativa para resolver el problema de Load Balancing, aunque su escalabilidad está limitada por la complejidad computacional del problema.
 
 		Esta técnica explora sistemáticamente todas las posibles asignaciones de trabajos a máquinas, pero utiliza estrategias de poda para eliminar ramas del árbol de búsqueda que no pueden conducir a una solución mejor que la ya encontrada.
 
-		\subsubsection{Pasos Clave}
+		\subsection*{Pasos Clave}
 
 		\textbf{1. Ordenar Trabajos}
 		\begin{itemize}
@@ -348,12 +374,12 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 			donde \( k \) es el índice del trabajo actual. Si \( T_{\text{min}} \geq T_{\text{best}} \), podar la rama.
 		\end{itemize}
 
-		\subsubsection{Complejidad Temporal}
+		\subsection*{Complejidad Temporal}
 		$O(m^n)$ en el peor caso
 
 		\begin{algorithm}
 			\caption{Backtracking con Poda para Load Balancing}
-			\begin{algorithmic}[1]
+
 			\Require Lista de trabajos $jobs$, número de máquinas $m$
 			\Ensure Makespan mínimo $T_{\text{best}}$
 			
@@ -385,10 +411,10 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 			\EndFunction
 			
 			\State \Return $\Call{Backtrack}{0, loads, T_{\text{best}}}$ \Comment{Llamada inicial}
-			\end{algorithmic}
+
 			\end{algorithm}
 	
-		\subsection{Algoritmos de aproximación}
+		\section{Algoritmos de aproximación}
 
 	Hemos demostrado que el problema de Load Balancing (en su versión de optimización) es NP-duro mediante una reducción desde el problema Partition al problema de decisión, y luego conectando el problema de decisión con el problema de optimización. Ahora vamos a ver algunos algoritmos para aproximar la solución del mismo.
 	
@@ -438,12 +464,9 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	\end{equation}
 	
 	Ahora estamos listos para evaluar la asignación obtenida por nuestro algoritmo greedy.
-	
-	\begin{theorem}
+
 		El algoritmo \textbf{Greedy-Balance} produce una asignación de trabajos a máquinas con un makespan \( T \leq 2T^* \).
-	\end{theorem}
 	
-	\begin{proof}
 		Aquí está el plan general para la demostración. Al analizar un algoritmo de aproximación, se compara la solución obtenida con lo que se sabe sobre el óptimo; en este caso, nuestras cotas inferiores (\ref{eq:lower-bound-1}) y (\ref{eq:lower-bound-2}). Consideramos una máquina \( M_i \) que alcanza la carga máxima \( T \) en nuestra asignación, y nos preguntamos: ¿Cuál fue el último trabajo \( j \) asignado a \( M_i \)? Si \( t_j \) no es demasiado grande en relación con la mayoría de los otros trabajos, entonces no estamos muy por encima de la cota inferior (\ref{eq:lower-bound-1}). Y, si \( t_j \) es un trabajo muy grande, entonces podemos usar (\ref{eq:lower-bound-2}).
 		
 		Cuando asignamos el trabajo \( j \) a \( M_i \), la máquina \( M_i \) tenía la carga más pequeña de cualquier máquina; esta es la propiedad clave de nuestro algoritmo greedy. Su carga justo antes de esta asignación era \( T_i - t_j \), y como esta era la carga más pequeña en ese momento, se sigue que todas las máquinas tenían una carga de al menos \( T_i - t_j \). Así, sumando las cargas de todas las máquinas, tenemos:
@@ -463,7 +486,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		T_i = (T_i - t_j) + t_j \leq 2T^*.
 		\]
 		Como nuestro makespan \( T \) es igual a \( T_i \), este es el resultado que queremos.
-	\end{proof}
+
 	
 	\subsection*{Sorted-Balance}
 	
@@ -493,28 +516,22 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	  T^* \geq 2t_{m+1} .
 	  	\end{equation}
 	
-	\begin{proof}
-		Considera solo los primeros \( m + 1 \) trabajos en el orden clasificado. Cada uno de ellos toma al menos un tiempo \( t_{m+1} \). Hay \( m + 1 \) trabajos y solo \( m \) máquinas, por lo que debe haber una máquina a la que se le asignen dos de estos trabajos. Esta máquina tendrá un tiempo de procesamiento de al menos \( 2t_{m+1} \).
-	\end{proof}
-	
-	\begin{theorem} \label{thm:sorted-balance}
+		Considera solo los primeros \( m + 1 \) trabajos en el orden clasificado. Cada uno de ellos toma al menos un tiempo \( t_{m+1} \). Hay \( m + 1 \) trabajos y solo \( m \) máquinas, por lo que debe haber una máquina a la que se le asignen dos de estos trabajos. Esta máquina tendrá un tiempo de procesamiento de al menos \( 2t_{m+1} \).\\\\\\
+
+
 		El algoritmo \textbf{Sorted-Balance} produce una asignación de trabajos a máquinas con un makespan \( T \leq \frac{3}{2} T^* \).
-	\end{theorem}
-	
-	\begin{proof}
+
 		La demostración será muy similar al análisis del algoritmo anterior. Como antes, consideraremos una máquina \( M_i \) que tiene la carga máxima. Si \( M_i \) solo contiene un trabajo, entonces el programa es óptimo.
 		
 		Supongamos que la máquina \( M_i \) tiene al menos dos trabajos, y sea \( t_j \) el último trabajo asignado a la máquina. Nótese que \( j \geq m + 1 \), ya que el algoritmo asignará los primeros \( m \) trabajos a \( m \) máquinas distintas. Por lo tanto, \( t_j \leq t_{m+1} \leq \frac{1}{2} T^* \), donde la segunda desigualdad es (\ref{lem:lower-bound}).
 		
-		Ahora procedemos como en la demostración de (\ref{thm:sorted-balance}), con el siguiente cambio. Al final de esa demostración, teníamos las desigualdades \( T_i - t_j \leq T^* \) y \( t_j \leq T^* \), y las sumamos para obtener el factor de 2. Pero en nuestro caso aquí, la segunda de estas desigualdades es, de hecho, \( t_j \leq \frac{1}{2} T^* \); por lo tanto, sumar las dos desigualdades nos da la cota:
+		Ahora procedemos como anteriormente, con el siguiente cambio. Al final de la demostración, teníamos las desigualdades \( T_i - t_j \leq T^* \) y \( t_j \leq T^* \), y las sumamos para obtener el factor de 2. Pero en nuestro caso aquí, la segunda de estas desigualdades es, de hecho, \( t_j \leq \frac{1}{2} T^* \); por lo tanto, sumar las dos desigualdades nos da la cota:
 		\[
 		T_i \leq \frac{3}{2} T^*.
 		\]
-	\end{proof}
 	
 	
-	
-	\section{Problema de Load Balancing con Precedencia}
+	\chapter{Problema de Load Balancing con Precedencia}
 	
 	El problema de \textbf{Load Balancing con Precedencia} se define como sigue:
 	
@@ -536,7 +553,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		\item El horario debe respetar las restricciones de precedencia: si $ (t_i, t_j) \in E $, entonces $ t_i $ debe completarse antes de que $ t_j $ comience.
 	\end{itemize}
 	
-	\subsection{Demostración de que Load Balancing con Precedencia es NP-duro}
+	\section{Demostración de que Load Balancing con Precedencia es NP-duro}
 	
 	Para demostrar que el problema de \textbf{Load Balancing con Precedencia} es NP-duro, realizamos una reducción desde el problema de \textbf{Load Balancing sin precedencia}.
 	
@@ -561,6 +578,17 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	
 	
 	\begin{thebibliography}{9}
+		
+		\bibitem{CLRS2009}
+		Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein.
+		\textit{Introduction to Algorithms}.
+		3rd ed. MIT Press, 2009.
+		
+		\bibitem{Rhee2016}
+		Donguk Rhee.
+		\textit{Esquemas de Aproximación Polinomial Más Rápidos para Problemas de la Mochila}.
+		Tesis de Maestría en Investigación de Operaciones, Instituto Tecnológico de Massachusetts, 2016.
+		
 		\bibitem{Kleinberg2005}
 		Jon Kleinberg and Éva Tardos.
 		\textit{Algorithm Design}.
@@ -571,10 +599,6 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		\textit{Computers and Intractability: A Guide to the Theory of NP-Completeness}.
 		1st ed. W. H. Freeman and Company, 1979.Extraído de página 238.
 		
-		\bibitem{Rhee2016}
-		Donguk Rhee.
-		\textit{Esquemas de Aproximación Polinomial Más Rápidos para Problemas de la Mochila}.
-		Tesis de Maestría en Investigación de Operaciones, Instituto Tecnológico de Massachusetts, 2016.
 		
 	\end{thebibliography}
 \end{document}
