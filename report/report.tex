@@ -39,15 +39,14 @@
 		\item \textit{Capacidad de la mochila} $\equiv$ Ventana temporal disponible.
 	\end{itemize}
 	
-	\section{Asignación de Tareas con Restricciones de Precedencia}
+	\section{Asignación de Tareas}
 	Se debe distribuir un conjunto de tareas agrícolas (ej: podar, regar, cosechar) entre un grupo de obreros, considerando:
 	\begin{itemize}
 		\item \textbf{Tiempo de ejecución}: Cada tarea requiere un tiempo específico.
-		\item \textbf{Precedencia}: Algunas tareas deben completarse antes que otras (ej: sembrar antes de regar).
 		\item \textbf{Recursos limitados}: Número fijo de obreros disponibles.
 	\end{itemize}
 	
-	\textbf{Objetivo}: Asignar tareas a obreros minimizando el tiempo total de ejecución (\textit{makespan}), respetando las restricciones de precedencia. Este problema se modela como una variante del \textbf{Balanceo de Carga (Load Balancing)} en sistemas distribuidos.
+	\textbf{Objetivo}: Asignar tareas a obreros minimizando el tiempo total de ejecución (\textit{makespan}). Este problema se modela como \textbf{Balanceo de Carga (Load Balancing)} en sistemas distribuidos.
 	
 	
 	\chapter{Problema Unbounded Knapsack}
@@ -72,7 +71,8 @@ El objetivo es maximizar el valor total de los elementos seleccionados sin exced
 La reducción se realiza mediante el algoritmo siguiente:
 
 
-\begin{algorithm}\label{uk_to_k}\caption{Reducción de UK a K}
+\begin{algorithm}[H]
+	\label{uk_to_k}\caption{Reducción de UK a K}
 
 	\State
 	\State 1. \textbf{Inicialización:}
@@ -137,7 +137,7 @@ La propiedad clave es que la solución óptima para capacidad $i$ puede construi
         \]
 \end{itemize}
 
-\begin{algorithm}
+\begin{algorithm}[H]
 	\caption{Pseudocódigo Unbounded Knapsack}
 	\State{$W, \texttt{weights}, \texttt{values}$}
     \State Inicializar arreglo $\text{DP}[0 \dots W]$ con 0's
@@ -377,7 +377,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		\subsection*{Complejidad Temporal}
 		$O(m^n)$ en el peor caso
 
-		\begin{algorithm}
+		\begin{algorithm}[H]
 			\caption{Backtracking con Poda para Load Balancing}
 
 			\Require Lista de trabajos $jobs$, número de máquinas $m$
@@ -413,8 +413,8 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 			\State \Return $\Call{Backtrack}{0, loads, T_{\text{best}}}$ \Comment{Llamada inicial}
 
 			\end{algorithm}
-	
-		\section{Algoritmos de aproximación}
+		
+			\section{Algoritmos de aproximación}
 
 	Hemos demostrado que el problema de Load Balancing (en su versión de optimización) es NP-duro mediante una reducción desde el problema Partition al problema de decisión, y luego conectando el problema de decisión con el problema de optimización. Ahora vamos a ver algunos algoritmos para aproximar la solución del mismo.
 	
@@ -427,7 +427,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	Primero consideramos un algoritmo greedy muy simple para el problema. El algoritmo hace un recorrido por los trabajos en cualquier orden; cuando llega al trabajo \( j \), lo asigna a la máquina cuya carga sea la más pequeña hasta ese momento.
 	
 
-\begin{algorithm}
+\begin{algorithm}[H]
 	\caption{Greedy-Balance}
 	\label{alg:greedy-balance}
 		\State Empezar sin trabajos asignados
@@ -496,7 +496,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 	
 	Así, ahora analizamos la variante del algoritmo greedy que primero ordena los trabajos en orden decreciente de tiempo de procesamiento y luego procede como antes. Demostraremos que la asignación resultante tiene un makespan que es, como máximo, 1.5 veces el óptimo.
 	
-	\begin{algorithm}
+	\begin{algorithm}[H]
 		\caption{Sorted-Balance}
 			\State Iniciar sin trabajos asignados.
 			\State Asignar \( T_i = 0 \) y \( A(i) = \emptyset \) para todas las máquinas \( M_i \).
@@ -530,49 +530,51 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		T_i \leq \frac{3}{2} T^*.
 		\]
 	
+		\chapter{Conclusiones}
+		
 	
-	\chapter{Problema de Load Balancing con Precedencia}
+	% \chapter{Problema de Load Balancing con Precedencia}
 	
-	El problema de \textbf{Load Balancing con Precedencia} se define como sigue:
+	% El problema de \textbf{Load Balancing con Precedencia} se define como sigue:
 	
-	\textbf{Entrada}:
-	\begin{itemize}
-		\item Un conjunto de $ n $ tareas $ T = \{t_1, t_2, \dots, t_n\} $.
-		\item Cada tarea $ t_i $ tiene un tiempo de procesamiento $ p_i > 0 $.
-		\item Un grafo dirigido acíclico (DAG) $ G = (T, E) $ que representa las restricciones de precedencia. Una arista $ (t_i, t_j) \in E $ indica que la tarea $ t_i $ debe completarse antes de que $ t_j $ pueda comenzar.
-		\item $ m $ procesadores idénticos disponibles para ejecutar las tareas.
-	\end{itemize}
+	% \textbf{Entrada}:
+	% \begin{itemize}
+	% 	\item Un conjunto de $ n $ tareas $ T = \{t_1, t_2, \dots, t_n\} $.
+	% 	\item Cada tarea $ t_i $ tiene un tiempo de procesamiento $ p_i > 0 $.
+	% 	\item Un grafo dirigido acíclico (DAG) $ G = (T, E) $ que representa las restricciones de precedencia. Una arista $ (t_i, t_j) \in E $ indica que la tarea $ t_i $ debe completarse antes de que $ t_j $ pueda comenzar.
+	% 	\item $ m $ procesadores idénticos disponibles para ejecutar las tareas.
+	% \end{itemize}
 	
-	\textbf{Salida}:
-	\begin{itemize}
-		\item Una asignación de tareas a procesadores y un horario que minimice el \textbf{makespan} $ C_{\text{max}} $, definido como el tiempo máximo de finalización de todas las tareas:
-		\[
-		C_{\text{max}} = \max_{j=1, \dots, m} \sum_{t_i \in S_j} p_i,
-		\]
-		donde $ S_j $ es el conjunto de tareas asignadas al procesador $ j $.
-		\item El horario debe respetar las restricciones de precedencia: si $ (t_i, t_j) \in E $, entonces $ t_i $ debe completarse antes de que $ t_j $ comience.
-	\end{itemize}
+	% \textbf{Salida}:
+	% \begin{itemize}
+	% 	\item Una asignación de tareas a procesadores y un horario que minimice el \textbf{makespan} $ C_{\text{max}} $, definido como el tiempo máximo de finalización de todas las tareas:
+	% 	\[
+	% 	C_{\text{max}} = \max_{j=1, \dots, m} \sum_{t_i \in S_j} p_i,
+	% 	\]
+	% 	donde $ S_j $ es el conjunto de tareas asignadas al procesador $ j $.
+	% 	\item El horario debe respetar las restricciones de precedencia: si $ (t_i, t_j) \in E $, entonces $ t_i $ debe completarse antes de que $ t_j $ comience.
+	% \end{itemize}
 	
-	\section{Demostración de que Load Balancing con Precedencia es NP-duro}
+	% \section{Demostración de que Load Balancing con Precedencia es NP-duro}
 	
-	Para demostrar que el problema de \textbf{Load Balancing con Precedencia} es NP-duro, realizamos una reducción desde el problema de \textbf{Load Balancing sin precedencia}.
+	% Para demostrar que el problema de \textbf{Load Balancing con Precedencia} es NP-duro, realizamos una reducción desde el problema de \textbf{Load Balancing sin precedencia}.
 	
-	\subsubsection*{Construcción de la Instancia}
+	% \subsubsection*{Construcción de la Instancia}
 	
-	Dada una instancia del problema de \textbf{Load Balancing sin precedencia}, construimos una instancia del problema de \textbf{Load Balancing con Precedencia} como sigue:
-	\begin{itemize}
-		\item Mantenemos el mismo conjunto de tareas $ T $ y sus tiempos de procesamiento $ p_1, p_2, \dots, p_n $.
-		\item No añadimos ninguna restricción de precedencia, es decir, el grafo $ G = (T, E) $ es vacío ($ E = \emptyset $).
-	\end{itemize}
+	% Dada una instancia del problema de \textbf{Load Balancing sin precedencia}, construimos una instancia del problema de \textbf{Load Balancing con Precedencia} como sigue:
+	% \begin{itemize}
+	% 	\item Mantenemos el mismo conjunto de tareas $ T $ y sus tiempos de procesamiento $ p_1, p_2, \dots, p_n $.
+	% 	\item No añadimos ninguna restricción de precedencia, es decir, el grafo $ G = (T, E) $ es vacío ($ E = \emptyset $).
+	% \end{itemize}
 	
-	\subsubsection*{Equivalencia}
+	% \subsubsection*{Equivalencia}
 	
-	- Si podemos resolver el problema de \textbf{Load Balancing con Precedencia} (con $ E = \emptyset $), entonces también podemos resolver el problema de \textbf{Load Balancing sin precedencia}.\\
-	- Por lo tanto, ambos problemas son equivalentes cuando no hay restricciones de precedencia.
+	% - Si podemos resolver el problema de \textbf{Load Balancing con Precedencia} (con $ E = \emptyset $), entonces también podemos resolver el problema de \textbf{Load Balancing sin precedencia}.\\
+	% - Por lo tanto, ambos problemas son equivalentes cuando no hay restricciones de precedencia.
 	
-	\subsubsection*{Complejidad de la Reducción}
+	% \subsubsection*{Complejidad de la Reducción}
 	
-	La construcción de la instancia del problema de \textbf{Load Balancing con Precedencia} a partir del problema de \textbf{Load Balancing sin precedencia} es trivial y se realiza en tiempo polinomial.
+	% La construcción de la instancia del problema de \textbf{Load Balancing con Precedencia} a partir del problema de \textbf{Load Balancing sin precedencia} es trivial y se realiza en tiempo polinomial.
 	
 	
 	
