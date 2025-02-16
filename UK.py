@@ -9,8 +9,9 @@ def uk_2_approximation(W, weights, values):
     m = -1
     d = -1
     for i in range(len(weights)):
-        if values[i] / weights[i] > d:
+        if values[i] / weights[i] > d and weights[i] < W:
             m = i
+            d = values[i] / weights[i]
     return values[m]*(W//weights[m])
     
 # ===========================
@@ -62,7 +63,7 @@ def compare_algorithms(test_cases):
         # Guardar resultados
         results_2_approx.append(max_value_aprox)
         results_dp.append(max_value_dp)
-        ratios.append(max_value_aprox / max_value_dp)
+        ratios.append(max_value_dp / max_value_aprox)
         times_2_approx.append(time_2_approx)
         times_dp.append(time_dp)
     
@@ -86,7 +87,7 @@ def compare_algorithms(test_cases):
     
     # Gráfico 2: Ratios entre los algoritmos
     plt.subplot(2, 1, 2)
-    plt.plot(range(len(test_cases)), ratios, label="Ratio (2-Aprox / DP)", marker='o', color='green')
+    plt.plot(range(len(test_cases)), ratios, label="Ratio (DP / 2-Aprox)", marker='o', color='green')
     plt.axhline(y=2, color='red', linestyle='--', label="Límite Teórico (2)")
     plt.xlabel("Casos de Prueba")
     plt.ylabel("Ratio")
@@ -107,13 +108,15 @@ def compare_algorithms(test_cases):
 if __name__ == "__main__":
     # Parámetros para generar casos de prueba
     num_tests = 10
-    max_price = 100
-    max_element_weight = 50
-    max_knapsack_weight = 200
-    num_elements = 10
+    max_price = 1000          # Valores altos para crear elementos de alta densidad
+    max_element_weight = 100  # Pesos variados pero manejables
+    max_knapsack_weight = 10**5  # Capacidad muy grande (afecta al algoritmo exacto)
+    num_elements = 50      # Incluye 1 elemento de densidad alta y otros con densidades engañosas        # Mantén 10 elementos para diversidad
 
     # Generar casos de prueba
     test_cases = generate_test_cases(num_tests, max_price, max_element_weight, max_knapsack_weight, num_elements)
-    
+    for i in test_cases:
+        print (i)
+   
     # Comparar algoritmos
     compare_algorithms(test_cases)

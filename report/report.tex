@@ -24,18 +24,25 @@
 	
 	La gestión agrícola moderna enfrenta desafíos críticos relacionados con la optimización de recursos, tanto en la planificación de cultivos como en la asignación eficiente de mano de obra. Estos problemas requieren enfoques algorítmicos robustos para maximizar beneficios económicos y minimizar tiempos de ejecución, asegurando un uso sostenible de los recursos disponibles. En este capítulo, se formalizan dos problemas centrales en este contexto y se establece su relación con problemas clásicos de optimización combinatoria.
 
-	\section{Rotación de Cultivos con Ventanas Temporales}
-	Se desea seleccionar cultivos para sembrar en un período determinado, considerando:
+	\section{Rotación de Cultivos en Ventanas Temporales}
+	La mayoría de las fincas del país se especializan en un cultivo en particular. El tabaco, por ejemplo, ocupa el mayor por ciento de las tierras en Pinar del Río entre los meses de octubre a febrero (el período entre la siembra y la cosecha suele durar de 4 a 5 meses en dependencia de la variedad a sembrar y las condiciones climatológicas y del suelo).
+	
+	 El tabaco es una planta perteneciente a la familia de las solanáceas al igual que la papa, la berenjena y el tomate, estos son cultivos exigentes en nutrientes, y su crecimiento óptimo requiere un suelo fértil y bien equilibrado, rico en nitrógeno, fósforo y potasio principalmente. 
+	 
+	 Las solanáceas agotan rápidamente el suelo, por esta razón, es común realizar rotaciones de cultivos, ocupando el tiempo después de la cosecha de las mismas con otros cultivos que aporten nutrientes al suelo para disminuir la necesidad de fertilizantes de cara a la próxima siembra.
+	 
+	\subsubsection{Formalización del problema}
+	Se desean seleccionar cultivos para sembrar en un período determinado, considerando:
 	\begin{itemize}
-		\item \textbf{Prioridad económica}: Cada cultivo genera un beneficio monetario asociado.
+		\item \textbf{Aporte al suelo}: Cada cultivo aporta nutrientes al suelo en cierto grado.
 		\item \textbf{Tiempo de ocupación}: Período durante el cual la tierra está ocupada (desde la siembra hasta la cosecha).
 		\item \textbf{Ventana temporal fija}: Duración total disponible para la siembra.
 	\end{itemize}
 	
-	\textbf{Objetivo}: Seleccionar un conjunto de cultivos (con posibles repeticiones) que maximice el beneficio total sin exceder la ventana temporal. Este problema es equivalente al \textbf{Problema de la Mochila Ilimitada (Unbounded Knapsack)}, donde:
+	\textbf{Objetivo}: Seleccionar un conjunto de cultivos (con posibles repeticiones) que maximice el beneficio total al suelo sin exceder la ventana temporal. Este problema es equivalente al \textbf{Problema de la Mochila Ilimitada (Unbounded Knapsack)}, donde:
 	\begin{itemize}
 		\item \textit{Peso del elemento} $\equiv$ Tiempo de ocupación del cultivo.
-		\item \textit{Valor del elemento} $\equiv$ Beneficio económico del cultivo.
+		\item \textit{Valor del elemento} $\equiv$ Beneficio que proporciona al suelo.
 		\item \textit{Capacidad de la mochila} $\equiv$ Ventana temporal disponible.
 	\end{itemize}
 	
@@ -207,7 +214,10 @@ z^* \leq 2z_L,
 \]
 lo cual implica que el algoritmo que selecciona únicamente el artículo con mayor densidad de beneficio y llena la mochila con este tipo de elementos constituye una $ 2 $-aproximación al valor óptimo del problema.
 
-\section{Experimentación gráfica}
+\section{Experimentación}
+La Figura 2.1 compara el valor máximo obtenido por el algoritmo exacto (programación dinámica) y el algoritmo de 2-aproximación para distintas instancias del problema Unbounded Knapsack.
+
+El algoritmo de 2-aproximación, aunque subóptimo, nunca excede el doble del valor óptimo, confirmando su garantía teórica
 
 \begin{figure}[H]
 	\centering
@@ -538,7 +548,9 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		T_i \leq \frac{3}{2} T^*.
 		\]
 		
-	\section{Experimentación gráfica}
+	\section{Experimentación}
+	
+	La Figura 3.1 contrasta el makespan del algoritmo exacto (backtracking con poda) y el algoritmo Greedy-Balance (2-aproximación). En todos los casos, el makespan de Greedy-Balance se mantiene por debajo de $2T^*$, incluso en distribuciones heterogéneas donde un trabajo grande domina el makespan.
 	
 	\begin{figure}[H]
 		\centering
@@ -547,7 +559,7 @@ lo cual implica que el algoritmo que selecciona únicamente el artículo con may
 		\label{fig:figure1}
 	\end{figure}
 	
-	
+		
 	
 	
 	\begin{thebibliography}{9}
